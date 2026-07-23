@@ -67,6 +67,12 @@ export class UIController {
     this.closePrivacyBtn = document.getElementById('close-privacy-btn');
     this.understandPrivacyBtn = document.getElementById('understand-privacy-btn');
 
+    // Changelog Modal
+    this.openChangelogBtn = document.getElementById('open-changelog-btn');
+    this.changelogModal = document.getElementById('changelog-modal');
+    this.closeChangelogBtn = document.getElementById('close-changelog-btn');
+    this.changelogModalBody = document.getElementById('changelog-modal-body');
+
     // Sidebar & Chat History
     this.newChatBtn = document.getElementById('new-chat-btn');
     this.sessionListContainer = document.getElementById('session-list');
@@ -290,15 +296,30 @@ export class UIController {
     // Settings Modal
     this.openSettingsBtn.addEventListener('click', () => this.showSettingsModal());
     this.closeSettingsBtn.addEventListener('click', () => this.hideSettingsModal());
+
+    // Privacy Modal
     this.privacyBadgeBtn.addEventListener('click', () => this.showPrivacyModal());
+    this.closePrivacyBtn.addEventListener('click', () => this.hidePrivacyModal());
+    this.understandPrivacyBtn.addEventListener('click', () => {
+      this.hidePrivacyModal();
+      this.showPrivacyBanner(false);
+      this.callbacks.onDismissPrivacyBanner();
+    });
     this.bannerPrivacyInfoBtn.addEventListener('click', () => this.showPrivacyModal());
     this.dismissBannerBtn.addEventListener('click', () => {
-      Animations.animateModalClose(this.privacyBanner, () => {
-        this.callbacks.onDismissPrivacyBanner();
-      });
+      this.showPrivacyBanner(false);
+      this.callbacks.onDismissPrivacyBanner();
     });
-    this.closePrivacyBtn.addEventListener('click', () => this.hidePrivacyModal());
-    this.understandPrivacyBtn.addEventListener('click', () => this.hidePrivacyModal());
+
+    // Changelog Modal
+    this.openChangelogBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.showChangelogModal();
+      if (this.callbacks.onOpenChangelog) {
+        this.callbacks.onOpenChangelog();
+      }
+    });
+    this.closeChangelogBtn.addEventListener('click', () => this.hideChangelogModal());
 
     this.toggleKeyVisibilityBtn.addEventListener('click', () => {
       const isPassword = this.modalApiKeyInput.type === 'password';
@@ -507,6 +528,8 @@ export class UIController {
   hideSettingsModal() { Animations.animateModalClose(this.settingsModal); }
   showPrivacyModal() { Animations.animateModalOpen(this.privacyModal); }
   hidePrivacyModal() { Animations.animateModalClose(this.privacyModal); }
+  showChangelogModal() { Animations.animateModalOpen(this.changelogModal); }
+  hideChangelogModal() { Animations.animateModalClose(this.changelogModal); }
 
   showPrivacyBanner(show) {
     if (show) this.privacyBanner.classList.remove('hidden');

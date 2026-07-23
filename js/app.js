@@ -7,6 +7,7 @@ import { ProviderService, PROVIDER_PRESETS } from './providers.js';
 import { StreamClient } from './stream.js';
 import { UIController } from './ui.js';
 import { ArtifactManager } from './artifacts.js';
+import { ChangelogManager } from './changelog.js';
 
 class NexusApp {
   constructor() {
@@ -15,6 +16,7 @@ class NexusApp {
     this.streamClient = new StreamClient();
     this.ui = new UIController();
     this.artifactManager = new ArtifactManager();
+    this.changelogManager = new ChangelogManager('indranil122/nexus-ai-chat');
 
     this.settings = null;
     this.sessions = [];
@@ -49,7 +51,11 @@ class NexusApp {
       onDeleteSession: (id) => this.deleteSession(id),
       onExportBackup: () => this.storage.exportBackup(),
       onImportBackup: (jsonStr) => this.handleImportBackup(jsonStr),
-      onDownloadArtifact: (artifact) => this.artifactManager.downloadArtifact(artifact)
+      onDownloadArtifact: (artifact) => this.artifactManager.downloadArtifact(artifact),
+      onOpenChangelog: async () => {
+        const commits = await this.changelogManager.fetchLatestCommits();
+        this.ui.changelogModalBody.innerHTML = this.changelogManager.buildTimelineHTML();
+      }
     });
 
     // 3. Update UI state
