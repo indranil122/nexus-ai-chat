@@ -55,6 +55,17 @@ class NexusApp {
       onOpenChangelog: async () => {
         const commits = await this.changelogManager.fetchLatestCommits();
         this.ui.changelogModalBody.innerHTML = this.changelogManager.buildTimelineHTML();
+        // Animate the items sliding in
+        if (window.anime) {
+          window.anime({
+            targets: '.changelog-item',
+            translateY: [20, 0],
+            opacity: [0, 1],
+            delay: window.anime.stagger(100),
+            duration: 600,
+            easing: 'easeOutExpo'
+          });
+        }
       }
     });
 
