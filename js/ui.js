@@ -108,6 +108,7 @@ export class UIController {
     this.canvasRefreshBtn = document.getElementById('canvas-refresh-btn');
     this.canvasCopyBtn = document.getElementById('canvas-copy-btn');
     this.canvasDownloadBtn = document.getElementById('canvas-download-btn');
+    this.canvasFullscreenBtn = document.getElementById('canvas-fullscreen-btn');
     this.canvasCloseBtn = document.getElementById('canvas-close-btn');
   }
 
@@ -150,6 +151,45 @@ export class UIController {
       if (this.currentArtifact && this.callbacks.onDownloadArtifact) {
         this.callbacks.onDownloadArtifact(this.currentArtifact);
       }
+    });
+
+    this.canvasFullscreenBtn.addEventListener('click', () => {
+      this.artifactCanvas.classList.toggle('fullscreen-mode');
+      const isFullscreen = this.artifactCanvas.classList.contains('fullscreen-mode');
+      this.canvasFullscreenBtn.innerHTML = isFullscreen
+        ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg><span>Shrink</span>`
+        : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg><span>Expand</span>`;
+    });
+
+    // Data Portability (Export / Import)
+    this.exportBackupBtn.addEventListener('click', () => {
+      if (this.callbacks.onExportBackup) {
+        this.callbacks.onExportBackup();
+        Animations.showToast('Backup downloaded successfully', 'success');
+      }
+    });
+
+    this.importBackupBtn.addEventListener('click', () => {
+      this.importFileInput.click();
+    });
+
+    this.importFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (this.callbacks.onImportBackup) {
+          const success = this.callbacks.onImportBackup(event.target.result);
+          if (success) {
+            Animations.showToast('Backup restored successfully. Reloading...', 'success');
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            Animations.showToast('Failed to import backup.', 'error');
+          }
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = ''; // Reset input
     });
 
     // Prompt Chips Quick Action
