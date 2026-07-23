@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusAI Chat - Universal Open-Source AI Interface & Canvas</title>
+  
+  <!-- Modern & Editorial Typography (Cormorant Garamond, Inter, Fira Code) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Fira+Code:wght@400;500;600&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Highlight.js Syntax Highlighting CSS -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css"></noscript>
+
+  <!-- KaTeX LaTeX CSS -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css"></noscript>
+
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- External CDN Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body class="editorial-theme">
+  <div id="app" class="app-container">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <button id="toggle-sidebar-btn" class="nav-icon-btn" title="Toggle Sidebar (Ctrl+B)" aria-label="Toggle Sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+        </button>
+
+        <div class="brand">
+          <div class="brand-logo-glow" title="Claude Editorial AI Workbench">
+            <svg class="brand-spike-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/></svg>
+          </div>
+          <span class="brand-name">Nexus<span class="highlight">AI</span></span>
+          <span class="brand-badge">BYOK PRO</span>
+        </div>
+
+        <button id="privacy-badge-btn" class="privacy-badge" title="Click to view Local Storage Security Info">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Local AES Encrypted</span>
+        </button>
+      </div>
+
+      <div class="nav-center">
+        <!-- Provider Preset Picker -->
+        <div class="preset-selector-wrapper">
+          <label for="provider-preset-select" class="visually-hidden">Provider Preset</label>
+          <select id="provider-preset-select" class="styled-select" title="Select Inference Provider Preset">
+            <option value="openrouter">OpenRouter API</option>
+            <option value="nvidia">NVIDIA NIM</option>
+            <option value="groq">Groq Cloud</option>
+            <option value="together">Together AI</option>
+            <option value="fireworks">Fireworks AI</option>
+            <option value="deepinfra">DeepInfra</option>
+            <option value="ollama">Ollama (Local)</option>
+            <option value="lmstudio">LM Studio (Local)</option>
+            <option value="custom">Custom Base URL</option>
+          </select>
+        </div>
+
+        <!-- Dynamic Model Scraper Dropdown -->
+        <div class="model-picker-wrapper">
+          <div id="model-dropdown-container" class="custom-dropdown">
+            <button id="model-dropdown-trigger" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+              <span id="selected-model-text">Discovering models...</span>
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+
+            <div id="model-dropdown-menu" class="dropdown-menu hidden">
+              <div class="dropdown-search-box">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="model-search-input" placeholder="Search models (e.g. llama-3.3, deepseek, mistral)...">
+                <button id="refresh-models-btn" class="nav-icon-btn-sm" title="Scrape / Refresh models from provider">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+                </button>
+              </div>
+
+              <div class="dropdown-filter-tabs">
+                <button class="filter-tab active" data-filter="all">All Models</button>
+                <button class="filter-tab" data-filter="free">Free Only</button>
+                <button class="filter-tab" data-filter="paid">Paid</button>
+              </div>
+
+              <div id="model-list" class="model-list-scroll">
+                <!-- Dynamically populated -->
+              </div>
+
+              <div class="dropdown-footer">
+                <span id="model-count-label">0 models available</span>
+                <button id="manual-model-btn" class="text-btn">Type Custom ID</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <button id="open-settings-btn" class="primary-btn-outline" title="Provider & API Key Settings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>API Settings</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- PROMINENT SECURITY & PRIVACY NOTIFICATION BANNER -->
+    <div id="privacy-banner" class="privacy-banner">
+      <div class="banner-content">
+        <div class="banner-icon-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="banner-text">
+          <strong>100% Private Client-Side Architecture</strong>
+          <p>Your API Keys are encrypted locally using <strong>Web Crypto AES-256</strong> in your browser. Requests connect directly to your inference endpoint (OpenRouter/NVIDIA NIM/Ollama) with zero server tracking.</p>
+        </div>
+      </div>
+      <div class="banner-actions">
+        <button id="banner-privacy-info-btn" class="action-pill-btn">Learn Security Details</button>
+        <button id="dismiss-banner-btn" class="nav-icon-btn-sm" title="Dismiss Notice" aria-label="Dismiss Notice">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN BODY WORKSPACE -->
+    <div class="main-body">
+
+      <!-- LEFT SIDEBAR DRAWER (Cortex-inspired Layout) -->
+      <aside id="sidebar" class="sidebar">
+        <div class="sidebar-top-group">
+          <button id="new-chat-btn" class="primary-btn block-btn pill-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>New chat</span>
+          </button>
+        </div>
+
+        <div class="sidebar-nav-links">
+          <a href="#" class="sidebar-nav-item active">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span>Explore</span>
+          </a>
+          <a href="#" class="sidebar-nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 6 4 14M12 6v14M8 6l-4 14M3 6h18"/></svg>
+            <span>Library</span>
+          </a>
+          <a href="#" class="sidebar-nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span>Files</span>
+          </a>
+          <a href="#" class="sidebar-nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+          </a>
+        </div>
+
+        <div class="sidebar-section history-section">
+          <div class="section-title">Today</div>
+          <div id="session-list" class="session-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- ACCORDION SETTINGS IN SIDEBAR -->
+        <div class="sidebar-section controls-section">
+          <div class="accordion-item">
+            <button class="accordion-header" id="system-prompt-toggle">
+              <span>System Prompt</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="accordion-content hidden" id="system-prompt-body">
+              <textarea id="system-prompt-input" rows="3" placeholder="Set AI persona or instructions..."></textarea>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-header" id="parameters-toggle">
+              <span>Model Parameters</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="accordion-content hidden" id="parameters-body">
+              <div class="param-group">
+                <div class="param-label">
+                  <span>Temperature</span>
+                  <span id="temp-val" class="val-tag">0.7</span>
+                </div>
+                <input type="range" id="temp-slider" min="0" max="2" step="0.1" value="0.7">
+              </div>
+
+              <div class="param-group">
+                <div class="param-label">
+                  <span>Max Tokens</span>
+                  <span id="tokens-val" class="val-tag">2048</span>
+                </div>
+                <input type="range" id="tokens-slider" min="256" max="8192" step="256" value="2048">
+              </div>
+
+              <div class="param-group">
+                <div class="param-label">
+                  <span>Top P</span>
+                  <span id="topp-val" class="val-tag">1.0</span>
+                </div>
+                <input type="range" id="topp-slider" min="0" max="1" step="0.05" value="1.0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="user-profile-card">
+            <div class="user-avatar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="user-info">
+              <span class="user-name">Local User</span>
+              <span class="user-email">AES-256 Encrypted</span>
+            </div>
+          </div>
+          <div class="sidebar-actions-row">
+            <button id="export-backup-btn" class="sidebar-action-btn" title="Download encrypted JSON backup">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+            <button id="import-backup-btn" class="sidebar-action-btn" title="Restore settings from JSON backup">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </button>
+            <input type="file" id="import-file-input" accept=".json" class="hidden">
+          </div>
+        </div>
+      </aside>
+
+      <!-- CHAT WORKSPACE & CANVAS SPLIT PANES -->
+      <main class="chat-workspace-split">
+        <div id="messages-pane" class="messages-pane">
+          <div id="messages-container" class="messages-container">
+            
+            <!-- CORTEX-INSPIRED ULTRA-MODERN HOMEPAGE HERO -->
+            <div id="welcome-card" class="welcome-card">
+              
+              <!-- 3D Floating Translucent Sphere Graphic -->
+              <div class="cortex-hero-graphic">
+                <div class="floating-fluid-sphere">
+                  <div class="sphere-inner-glow"></div>
+                  <div class="sphere-highlight"></div>
+                </div>
+              </div>
+
+              <!-- Hero Greeting Header -->
+              <div class="welcome-hero">
+                <span class="hero-greeting-sub">Hello, Creator</span>
+                <h1 class="hero-display-title">How can I assist you today?</h1>
+              </div>
+
+              <!-- Embedded Floating Card Input Container Removed -->
+
+              <!-- Quick Action Cards Grid (3 Columns) -->
+              <div class="cortex-starter-cards-grid">
+                <div class="cortex-card prompt-chip" data-prompt="Synthesize research data and meeting notes into 5 key bullet points with executive summary">
+                  <div class="cortex-card-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  </div>
+                  <div class="cortex-card-title">Synthesize Data</div>
+                  <div class="cortex-card-desc">Turn meeting notes & research into 5 key bullet points for the team.</div>
+                </div>
+
+                <div class="cortex-card prompt-chip" data-prompt="Generate 3 taglines for a new sustainable tech brand with interactive SaaS landing page">
+                  <div class="cortex-card-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                  </div>
+                  <div class="cortex-card-title">Creative Brainstorm</div>
+                  <div class="cortex-card-desc">Generate 3 taglines & interactive pricing cards for a new brand.</div>
+                </div>
+
+                <div class="cortex-card prompt-chip" data-prompt="Create an interactive HTML5 Calculator web app with dark glassmorphism styling in Canvas">
+                  <div class="cortex-card-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                  </div>
+                  <div class="cortex-card-title">Build Web App Canvas</div>
+                  <div class="cortex-card-desc">Create a live interactive calculator or arcade game in the side panel.</div>
+                </div>
+              </div>
+
+              <!-- Footer Insight Note -->
+              <div class="cortex-footer-note">
+                Connects directly to inference providers • Zero server tracking • Local AES Encrypted
+              </div>
+
+            </div>
+
+            <!-- MESSAGES LIST -->
+            <div id="messages-list" class="messages-list"></div>
+          </div>
+
+          <!-- INPUT BOX FOOTER -->
+          <div class="input-container-wrapper">
+            <div class="input-container">
+              <div class="input-status-bar">
+                <span id="active-model-tag" class="model-pill">No Model Selected</span>
+                <span id="active-provider-tag" class="provider-pill">OpenRouter</span>
+              </div>
+
+              <div class="textarea-wrapper">
+                <textarea id="prompt-input" rows="1" placeholder="Ask anything or request a web app... (Shift+Enter for line break)"></textarea>
+                <button id="send-btn" class="send-btn" title="Send message" aria-label="Send message">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+                <button id="stop-btn" class="stop-btn hidden" title="Stop generating">
+                  <span class="stop-square"></span>
+                  <span>Stop</span>
+                </button>
+              </div>
+            </div>
+            <div class="input-footer-note">
+              NexusAI connects directly to inference APIs. Credentials remain local in Web Crypto AES.
+            </div>
+          </div>
+        </div>
+
+        <!-- ARTIFACTS / CANVAS SIDE PANEL (REDESIGNED ACTION BUTTONS) -->
+        <div id="artifact-canvas" class="artifact-canvas hidden">
+          <div class="canvas-header">
+            <div class="canvas-title-group">
+              <div class="canvas-brand-badge">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <span id="canvas-title" class="canvas-title">Artifact Preview</span>
+              <span id="canvas-type-tag" class="canvas-type-tag">HTML</span>
+            </div>
+
+            <div class="canvas-tabs">
+              <button id="canvas-tab-preview" class="canvas-tab active">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>Live Preview</span>
+              </button>
+              <button id="canvas-tab-code" class="canvas-tab">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                <span>Source Code</span>
+              </button>
+            </div>
+
+            <!-- PROPER, HIGH-CONTRAST, VISIBLE CANVAS ACTION BUTTONS -->
+            <div class="canvas-actions">
+              <button id="canvas-refresh-btn" class="canvas-action-btn" title="Refresh Live App Preview">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+                <span>Refresh</span>
+              </button>
+
+              <button id="canvas-copy-btn" class="canvas-action-btn" title="Copy Source Code">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <span>Copy</span>
+              </button>
+
+              <button id="canvas-download-btn" class="canvas-action-btn" title="Download File to Computer">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Download</span>
+              </button>
+
+              <button id="canvas-close-btn" class="canvas-close-btn" title="Close Canvas Panel" aria-label="Close Canvas">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-content">
+            <div id="canvas-preview-pane" class="canvas-tab-content">
+              <iframe id="canvas-iframe" sandbox="allow-scripts allow-modals allow-forms allow-same-origin" title="Live Preview"></iframe>
+            </div>
+
+            <div id="canvas-code-pane" class="canvas-tab-content hidden">
+              <pre><code id="canvas-code-content" class="language-html"></code></pre>
+            </div>
+          </div>
+        </div>
+      </main>
+
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <h3>Provider & API Settings</h3>
+          </div>
+          <button id="close-settings-btn" class="nav-icon-btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="modal-preset-select">Inference Service Preset</label>
+            <select id="modal-preset-select" class="styled-select-full">
+              <option value="openrouter">OpenRouter API</option>
+              <option value="nvidia">NVIDIA NIM</option>
+              <option value="groq">Groq Cloud</option>
+              <option value="together">Together AI</option>
+              <option value="fireworks">Fireworks AI</option>
+              <option value="deepinfra">DeepInfra</option>
+              <option value="ollama">Ollama (Local)</option>
+              <option value="lmstudio">LM Studio (Local)</option>
+              <option value="custom">Custom Base URL</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="modal-baseurl-input">Base URL Endpoint</label>
+            <input type="text" id="modal-baseurl-input" class="styled-input" placeholder="e.g. https://openrouter.ai/api/v1">
+            <small class="form-hint">Standard OpenAI-compatible endpoint URL.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="modal-apikey-input">API Key</label>
+            <div class="input-with-action">
+              <input type="password" id="modal-apikey-input" class="styled-input" placeholder="sk-...">
+              <button id="toggle-key-visibility" class="action-btn-inside">Show</button>
+            </div>
+            <small class="form-hint">Stored locally in your browser with AES-256 Web Crypto encryption.</small>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label class="custom-checkbox-label">
+              <input type="checkbox" id="modal-session-only-checkbox">
+              <span class="checkbox-text">In-Memory Session Only (Forget API Key when browser tab closes)</span>
+            </label>
+          </div>
+
+          <div class="status-box" id="modal-test-status">
+            Click "Fetch Models" to verify connection and auto-scrape model names.
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="test-connection-btn" class="secondary-btn">Fetch / Scrape Models</button>
+          <button id="save-settings-btn" class="primary-btn">Save & Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIVACY & LOCAL STORAGE INFO MODAL -->
+    <div id="privacy-modal" class="modal-overlay hidden">
+      <div class="modal-card modal-medium">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <h3>Local Storage & Security Notice</h3>
+          </div>
+          <button id="close-privacy-btn" class="nav-icon-btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="modal-body privacy-modal-body">
+          <div class="privacy-notice-box">
+            <h4>Security Architecture:</h4>
+            <ul>
+              <li><strong>Zero Server Middleman:</strong> NexusAI has no database or telemetry server. API requests connect directly from your browser to your selected provider.</li>
+              <li><strong>AES-256 Web Crypto Encryption:</strong> API Keys are encrypted locally using PBKDF2 + AES-GCM before writing to `localStorage`.</li>
+              <li><strong>Browser Cache Backup:</strong> Clearing browser data removes local history. Use the <strong>Backup</strong> button in the sidebar anytime to export an encrypted JSON backup.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="understand-privacy-btn" class="primary-btn">Got It, Thanks!</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Main JavaScript App -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
