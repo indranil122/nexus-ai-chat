@@ -436,7 +436,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const launchAppAnimated = () => {
     landingPage.classList.add('hidden-launch');
-    setTimeout(launchAppImmediate, 500);
+    setTimeout(() => {
+      window.location.hash = 'app';
+    }, 400);
   };
 
   const showLandingPage = () => {
@@ -462,7 +464,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (launchBtn) {
     launchBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = 'app';
       launchAppAnimated();
     });
   }
@@ -471,7 +472,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (heroBtn2) {
     heroBtn2.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = 'app';
       launchAppAnimated();
     });
   }
