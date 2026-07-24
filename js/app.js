@@ -433,7 +433,21 @@ document.addEventListener('DOMContentLoaded', () => {
         appWorkspace.style.display = 'flex';
         const app = new NexusApp();
         app.init();
-      }, 500); // Wait for CSS transition
+      }, 500);
+    });
+  }
+  
+  // Also listen on the hero body CTA button
+  const heroBtn2 = document.getElementById('hero-launch-btn-2');
+  if (heroBtn2) {
+    heroBtn2.addEventListener('click', () => {
+      landingPage.classList.add('hidden-launch');
+      setTimeout(() => {
+        landingPage.style.display = 'none';
+        appWorkspace.style.display = 'flex';
+        const app = new NexusApp();
+        app.init();
+      }, 500);
     });
   }
 
@@ -469,37 +483,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoHTML = getProviderLogoHTML(model.id, familyName);
         
         const card = document.createElement('div');
-        // Tailwind card layout
-        card.className = 'group relative rounded-2xl border p-5 transition-all hover:-translate-y-1 hover:shadow-lg overflow-hidden';
-        card.style.borderColor = 'var(--border)';
-        card.style.backgroundColor = 'var(--bg-elev)';
+        card.className = 'lp-model-card';
+        card.style.cursor = 'pointer';
         
         card.innerHTML = `
-          <div class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div class="flex items-start justify-between mb-4">
-            <div class="flex items-center gap-2.5">
-              <div class="h-9 w-9 shrink-0 flex items-center justify-center rounded-lg border overflow-hidden" style="border-color: var(--border); background: var(--bg-soft);">
-                ${logoHTML.replace('class="model-company-logo"', 'class="w-full h-full object-contain bg-white" style="padding: 2px;"')}
+          <div class="lp-model-card-shine"></div>
+          <div class="lp-model-card-top">
+            <div class="lp-model-card-info">
+              <div class="lp-model-logo-wrap">
+                ${logoHTML.replace('class="model-company-logo"', 'class="" style="width:100%;height:100%;object-fit:contain;padding:4px;"')}
               </div>
               <div>
-                <div class="text-[10.5px] uppercase tracking-wider" style="color: var(--fg-muted);">${familyName}</div>
-                <h3 class="text-[15px] font-semibold tracking-tight leading-tight truncate max-w-[150px]" style="color: var(--fg);" title="${model.name}">${model.name}</h3>
+                <div class="lp-model-family">${familyName}</div>
+                <div class="lp-model-name" title="${model.name}">${model.name.length > 20 ? model.name.substring(0, 20) + '...' : model.name}</div>
               </div>
             </div>
-            ${isFree ? `<span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10.5px] font-semibold tracking-wide" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);">FREE</span>` : ''}
+            ${isFree ? '<span class="lp-free-badge">FREE</span>' : ''}
           </div>
-          <p class="text-[12.5px] mb-4 min-h-[2.5em] line-clamp-2" style="color: var(--fg-soft);">
-            ${model.id}
-          </p>
-          <div class="flex items-center gap-1.5 pt-3 border-t" style="border-color: var(--border);">
-            <div class="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium" style="background: var(--bg-soft); color: var(--fg-soft);">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-              Fast Inference
-            </div>
-            <div class="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium" style="background: var(--bg-soft); color: var(--fg-soft);">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
-              Open Weights
-            </div>
+          <div class="lp-model-id">${model.id}</div>
+          <div class="lp-model-card-footer">
+            <span class="lp-model-tag">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Fast
+            </span>
+            <span class="lp-model-tag">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Open
+            </span>
           </div>
         `;
         grid.appendChild(card);

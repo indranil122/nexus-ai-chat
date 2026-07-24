@@ -114,37 +114,167 @@
           <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Local AI Ready</li>
           <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Open Source Friendly</li>
         </ul>
+
+        <div class="lp-trusted-by">
+          <div class="lp-avatars-group">
+            <span class="lp-avatar-dot" style="background:#0a0a0a;"></span>
+            <span class="lp-avatar-dot" style="background:#27272a;"></span>
+            <span class="lp-avatar-dot" style="background:#52525b;"></span>
+          </div>
+          <span>Trusted by <strong style="color:var(--ink);">12,400+</strong> developers building locally.</span>
+        </div>
       </div>
 
-      <!-- RIGHT — Mockup -->
-      <div class="lp-hero-mockup">
+      <!-- RIGHT — Interactive Mockup with Floating Cards -->
+      <div class="lp-hero-mockup" style="position: relative;">
+        
+        <!-- Floating cards -->
+        <div class="lp-floating-card lp-float-1">
+          <span class="lp-fc-icon">⚡</span>
+          <div>
+            <div class="lp-fc-title">Groq</div>
+            <div class="lp-fc-sub">184 tok/s</div>
+          </div>
+        </div>
+
+        <div class="lp-floating-card lp-float-2">
+          <span class="lp-fc-icon">👁️</span>
+          <div>
+            <div class="lp-fc-title">Vision</div>
+            <div class="lp-fc-sub">Gemma 3 · 27B</div>
+          </div>
+        </div>
+
+        <div class="lp-floating-card lp-float-3">
+          <span class="lp-fc-icon">🧠</span>
+          <div>
+            <div class="lp-fc-title">Reasoning</div>
+            <div class="lp-fc-sub">DeepSeek R1</div>
+          </div>
+        </div>
+
+        <div class="lp-floating-card lp-float-4">
+          <span class="lp-fc-icon">💻</span>
+          <div>
+            <div class="lp-fc-title">Local · Ollama</div>
+            <div class="lp-fc-sub">Llama 3.3 · 70B</div>
+          </div>
+        </div>
+
+        <!-- Main Mockup Window -->
         <div class="lp-mockup-window">
+          <!-- Titlebar -->
           <div class="lp-mockup-titlebar">
             <div class="lp-mockup-dots">
               <span></span><span></span><span></span>
             </div>
             <div class="lp-mockup-url">
               <span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block;"></span>
-              nexus.ai/workspace
+              nexus.ai/workspace/new
             </div>
-            <div></div>
+            <div style="font-size:11px;color:var(--subtle);font-family:monospace;">&lt;/&gt;</div>
           </div>
-          <div class="lp-mockup-body">
-            <div class="lp-chat-msg">
-              <div class="lp-chat-avatar"></div>
-              <div class="lp-chat-bubble">Analyze this dataset using DeepSeek R1 reasoning.</div>
-            </div>
-            <div class="lp-chat-msg">
-              <div class="lp-chat-avatar ai">✦</div>
-              <div class="lp-chat-bubble ai">
-                Here is the analysis based on local inference...
-                <div class="lp-skeleton" style="width: 80%;"></div>
-                <div class="lp-skeleton" style="width: 65%;"></div>
-                <div class="lp-skeleton" style="width: 45%;"></div>
+
+          <!-- Window Layout -->
+          <div class="lp-mockup-layout">
+            <!-- Sidebar -->
+            <div class="lp-mockup-sidebar">
+              <div>
+                <div class="lp-sb-group-title">Provider</div>
+                <div class="lp-sb-item active"><span>OpenRouter</span><span>✓</span></div>
+                <div class="lp-sb-item"><span>Groq</span></div>
+                <div class="lp-sb-item"><span>NVIDIA NIM</span></div>
+                <div class="lp-sb-item"><span>Together AI</span></div>
+                <div class="lp-sb-item"><span>Ollama</span></div>
               </div>
+
+              <div>
+                <div class="lp-sb-group-title">Model</div>
+                <div class="lp-sb-item active" style="font-size:11px;">
+                  <span>deepseek-r1</span>
+                  <span class="lp-free-badge" style="padding:1px 4px;font-size:9px;">FREE</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="lp-sb-group-title">Sessions</div>
+                <div style="font-size:11px;color:var(--muted);padding:2px 4px;">Pricing component</div>
+                <div style="font-size:11px;color:var(--subtle);padding:2px 4px;">API refactor</div>
+              </div>
+            </div>
+
+            <!-- Main Chat + Live Canvas Stream -->
+            <div class="lp-mockup-main">
+              <!-- Tabs -->
+              <div class="lp-mockup-tabs">
+                <span class="lp-tab-pill active">💬 Chat</span>
+                <span class="lp-tab-pill">💻 Code</span>
+                <span class="lp-tab-pill">✨ Canvas</span>
+              </div>
+
+              <!-- Chat area -->
+              <div class="lp-mockup-chat">
+                <div class="lp-chat-msg">
+                  <div class="lp-chat-avatar"></div>
+                  <div class="lp-chat-bubble">Generate a React pricing component with monthly/yearly toggle.</div>
+                </div>
+
+                <div class="lp-chat-msg">
+                  <div class="lp-chat-avatar ai">✨</div>
+                  <div class="lp-chat-bubble ai" style="max-width:98%;">
+                    <div>I'll build a clean, accessible pricing card with a billing toggle.</div>
+
+                    <!-- Code Stream Box -->
+                    <div class="lp-code-stream-box">
+                      <div class="lp-code-stream-header">
+                        <span>streaming · pricing.tsx</span>
+                        <span>tsx</span>
+                      </div>
+                      <pre class="lp-code-stream-pre"><code id="hero-code-stream"></code><span class="lp-cursor"></span></pre>
+                    </div>
+
+                    <!-- Live Canvas Preview -->
+                    <div class="lp-canvas-preview">
+                      <div style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--subtle);margin-bottom:6px;font-family:monospace;">
+                        <span>● live preview</span>
+                        <span>v0.3.2</span>
+                      </div>
+                      <div class="lp-canvas-grid">
+                        <div class="lp-pricing-card-mini">
+                          <div style="font-size:9px;opacity:0.7;">Starter</div>
+                          <div style="font-size:12px;font-weight:600;margin:2px 0;">$9</div>
+                          <div style="font-size:8px;color:var(--subtle);">/month</div>
+                        </div>
+                        <div class="lp-pricing-card-mini featured">
+                          <div style="font-size:9px;opacity:0.7;">Pro</div>
+                          <div style="font-size:12px;font-weight:600;margin:2px 0;">$24</div>
+                          <div style="font-size:8px;opacity:0.8;">/month</div>
+                        </div>
+                        <div class="lp-pricing-card-mini">
+                          <div style="font-size:9px;opacity:0.7;">Team</div>
+                          <div style="font-size:12px;font-weight:600;margin:2px 0;">$49</div>
+                          <div style="font-size:8px;color:var(--subtle);">/month</div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- Input bar -->
+              <div class="lp-mockup-input-bar">
+                <div class="lp-input-fake">
+                  <span style="font-family:monospace;">→</span>
+                  <span style="flex:1;">Ask Nexus to build anything…</span>
+                  <span style="border:1px solid var(--hairline);border-radius:4px;padding:1px 4px;font-size:9px;font-family:monospace;">⌘K</span>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
