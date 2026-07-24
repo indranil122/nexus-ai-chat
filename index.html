@@ -76,20 +76,47 @@
   <div id="ambient-background"></div>
 
   <!-- LANDING PAGE (Tailwind Container) -->
-  <div id="landing-page" class="landing-page" style="z-index: 1000;">
-    <!-- React components will be translated into HTML here -->
+  <div id="landing-page" class="landing-page" style="z-index: 1000; min-height: 100vh; overflow-y: auto; overflow-x: hidden;">
+    
+    <!-- STICKY NAV BAR -->
+    <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4" style="background: color-mix(in srgb, var(--canvas) 80%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border);">
+      <!-- Logo -->
+      <div class="flex items-center gap-2.5">
+        <div class="h-7 w-7 rounded-lg flex items-center justify-center" style="background: #eb4826;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="text-[15px] font-semibold tracking-tight" style="color: var(--fg);">NexusAI</span>
+      </div>
+      
+      <!-- Nav Links -->
+      <div class="hidden md:flex items-center gap-6 text-[13.5px] font-medium" style="color: var(--fg-soft);">
+        <a href="#providers" class="hover:text-white transition-colors">Providers</a>
+        <a href="#models" class="hover:text-white transition-colors">Free Models</a>
+        <a href="#features" class="hover:text-white transition-colors">Features</a>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Theme toggle -->
+        <button id="landing-theme-toggle" class="h-8 w-8 rounded-lg flex items-center justify-center transition-all" style="background: var(--bg-soft); border: 1px solid var(--border); color: var(--fg-soft);" title="Toggle theme">
+          <svg id="landing-theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <button id="hero-launch-btn" class="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-[13px] font-medium transition-all hover:opacity-90" style="background: #eb4826; color: white;">
+          Open Chatbot
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+    </nav>
+
     <main class="w-full flex flex-col items-center overflow-x-hidden">
       
       <!-- HERO SECTION -->
-      <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 w-full max-w-[1280px] px-6 mx-auto">
-        <!-- Subtle background grid -->
-        <div class="absolute inset-0 bg-grid opacity-60 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_70%)] pointer-events-none"></div>
+      <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 w-full px-6" style="max-width: 100%;">
+        <div class="absolute top-32 left-[8%] h-72 w-72 rounded-full blur-3xl opacity-40 pointer-events-none" style="background: rgba(235,72,38,0.15);"></div>
+        <div class="absolute top-60 right-[5%] h-96 w-96 rounded-full blur-3xl opacity-30 pointer-events-none" style="background: rgba(139,92,246,0.15);"></div>
 
-        <!-- Floating decorative orbs -->
-        <div class="absolute top-32 left-[8%] h-72 w-72 rounded-full blur-3xl opacity-60 pointer-events-none" style="background: var(--bg-soft);"></div>
-        <div class="absolute top-60 right-[5%] h-96 w-96 rounded-full blur-3xl opacity-40 pointer-events-none" style="background: var(--bg-soft);"></div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 items-center relative z-10">
+        <div class="mx-auto max-w-[1280px] relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 items-center">
           
           <!-- LEFT — Copy -->
           <div class="relative">
