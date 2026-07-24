@@ -35,6 +35,7 @@ export class UIController {
     this.sidebar = document.getElementById('sidebar');
     this.privacyBadgeBtn = document.getElementById('privacy-badge-btn');
     this.providerPresetSelect = document.getElementById('provider-preset-select');
+    this.themeToggleBtn = document.getElementById('theme-toggle-btn');
     
     // Model dropdown elements
     this.modelDropdownTrigger = document.getElementById('model-dropdown-trigger');
@@ -58,6 +59,28 @@ export class UIController {
     this.modalTestStatus = document.getElementById('modal-test-status');
     this.testConnectionBtn = document.getElementById('test-connection-btn');
     this.saveSettingsBtn = document.getElementById('save-settings-btn');
+
+    // Auth & Vault elements
+    this.openAuthBtn = document.getElementById('open-auth-btn');
+    this.navUserName = document.getElementById('nav-user-name');
+    this.authModal = document.getElementById('auth-modal');
+    this.closeAuthBtn = document.getElementById('close-auth-btn');
+    this.authLoginBtn = document.getElementById('auth-login-btn');
+    this.authLogoutBtn = document.getElementById('auth-logout-btn');
+    this.authEmailInput = document.getElementById('auth-email-input');
+    this.authNameInput = document.getElementById('auth-name-input');
+    this.authAccountView = document.getElementById('auth-account-view');
+    this.authLoginView = document.getElementById('auth-login-view');
+    this.authUserName = document.getElementById('auth-user-name');
+    this.authUserEmail = document.getElementById('auth-user-email');
+    this.vaultKeysList = document.getElementById('vault-keys-list');
+    this.vaultCountBadge = document.getElementById('vault-count-badge');
+
+    // Settings Vault & Autosave elements
+    this.savedKeysSelect = document.getElementById('saved-keys-select');
+    this.saveCurrentVaultBtn = document.getElementById('save-current-vault-btn');
+    this.modalAutosaveCheckbox = document.getElementById('modal-autosave-checkbox');
+    this.toastContainer = document.getElementById('toast-container');
 
     // Privacy Banner & Modal
     this.privacyBanner = document.getElementById('privacy-banner');
@@ -245,6 +268,13 @@ export class UIController {
       this.callbacks.onParameterChange('systemPrompt', e.target.value);
     });
 
+    // Theme Toggle
+    if (this.themeToggleBtn) {
+      this.themeToggleBtn.addEventListener('click', () => {
+        if (this.callbacks.onToggleTheme) this.callbacks.onToggleTheme();
+      });
+    }
+
     // Preset Pickers
     this.providerPresetSelect.addEventListener('change', (e) => {
       this.callbacks.onPresetSelect(e.target.value);
@@ -339,10 +369,52 @@ export class UIController {
         preset: this.modalPresetSelect.value,
         baseUrl: this.modalBaseUrlInput.value,
         apiKey: this.modalApiKeyInput.value,
-        isSessionOnly: this.modalSessionOnlyCheckbox.checked
+        isSessionOnly: this.modalSessionOnlyCheckbox.checked,
+        isAutoSave: this.modalAutosaveCheckbox ? this.modalAutosaveCheckbox.checked : true
       });
       this.hideSettingsModal();
     });
+
+    // Auth & Vault listeners
+    if (this.openAuthBtn) {
+      this.openAuthBtn.addEventListener('click', () => {
+        if (this.callbacks.onOpenAuthModal) this.callbacks.onOpenAuthModal();
+      });
+    }
+    if (this.closeAuthBtn) {
+      this.closeAuthBtn.addEventListener('click', () => this.hideAuthModal());
+    }
+    if (this.authLoginBtn) {
+      this.authLoginBtn.addEventListener('click', () => {
+        const email = this.authEmailInput.value;
+        const name = this.authNameInput.value;
+        if (this.callbacks.onLoginUser) this.callbacks.onLoginUser(email, name);
+      });
+    }
+    if (this.authLogoutBtn) {
+      this.authLogoutBtn.addEventListener('click', () => {
+        if (this.callbacks.onLogoutUser) this.callbacks.onLogoutUser();
+      });
+    }
+    if (this.savedKeysSelect) {
+      this.savedKeysSelect.addEventListener('change', (e) => {
+        const preset = e.target.value;
+        if (preset && this.callbacks.onSelectVaultEntry) {
+          this.callbacks.onSelectVaultEntry(preset);
+        }
+      });
+    }
+    if (this.saveCurrentVaultBtn) {
+      this.saveCurrentVaultBtn.addEventListener('click', () => {
+        if (this.callbacks.onSaveCurrentToVault) {
+          this.callbacks.onSaveCurrentToVault({
+            preset: this.modalPresetSelect.value,
+            baseUrl: this.modalBaseUrlInput.value,
+            apiKey: this.modalApiKeyInput.value
+          });
+        }
+      });
+    }
 
     // Welcome cards quick clicks
     document.querySelectorAll('.preset-card').forEach(card => {
@@ -495,6 +567,24 @@ export class UIController {
     this.activeModelTag.textContent = modelId || 'No Model';
   }
 
+  applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
+    if (this.themeToggleBtn) {
+      const sunIcon = this.themeToggleBtn.querySelector('.sun-icon');
+      const moonIcon = this.themeToggleBtn.querySelector('.moon-icon');
+      if (sunIcon && moonIcon) {
+        if (theme === 'dark') {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        } else {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        }
+      }
+    }
+  }
+
   // Update Settings Form UI
   updateSettingsForm(settings) {
     this.providerPresetSelect.value = settings.preset;
@@ -530,6 +620,120 @@ export class UIController {
   hidePrivacyModal() { Animations.animateModalClose(this.privacyModal); }
   showChangelogModal() { Animations.animateModalOpen(this.changelogModal); }
   hideChangelogModal() { Animations.animateModalClose(this.changelogModal); }
+  showAuthModal() { Animations.animateModalOpen(this.authModal); }
+  hideAuthModal() { Animations.animateModalClose(this.authModal); }
+
+  // Toast Notification System
+  showToast(message, type = 'info') {
+    if (!this.toastContainer) return;
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    const iconSvg = type === 'success'
+      ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
+      : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+    
+    toast.innerHTML = `${iconSvg} <span>${message}</span>`;
+    this.toastContainer.appendChild(toast);
+
+    if (window.anime) {
+      window.anime({
+        targets: toast,
+        translateY: [20, 0],
+        opacity: [0, 1],
+        duration: 300,
+        easing: 'easeOutExpo'
+      });
+    }
+
+    setTimeout(() => {
+      if (window.anime) {
+        window.anime({
+          targets: toast,
+          translateY: [0, -20],
+          opacity: [1, 0],
+          duration: 300,
+          easing: 'easeInExpo',
+          complete: () => toast.remove()
+        });
+      } else {
+        toast.remove();
+      }
+    }, 3200);
+  }
+
+  // Populate Saved Keys Dropdown in Settings Modal
+  renderSavedKeysDropdown(vaultEntries, currentPreset) {
+    if (!this.savedKeysSelect) return;
+    this.savedKeysSelect.innerHTML = `<option value="">-- Load Saved Key from Vault --</option>`;
+    if (!vaultEntries || vaultEntries.length === 0) return;
+
+    vaultEntries.forEach(entry => {
+      const opt = document.createElement('option');
+      opt.value = entry.preset;
+      const mask = entry.apiKey ? entry.maskedApiKey : 'No API Key';
+      opt.textContent = `${entry.presetName || entry.preset} (${mask})`;
+      if (entry.preset === currentPreset) {
+        opt.selected = true;
+      }
+      this.savedKeysSelect.appendChild(opt);
+    });
+  }
+
+  // Update Account UI & Vault Summary
+  updateUserAccountUI(user, vaultEntries = []) {
+    if (this.navUserName) {
+      this.navUserName.textContent = user && user.email ? (user.name || user.email) : 'Account / Sign In';
+    }
+
+    if (user && user.email && user.id) {
+      if (this.authAccountView) this.authAccountView.classList.remove('hidden');
+      if (this.authLoginView) this.authLoginView.classList.add('hidden');
+      if (this.authLogoutBtn) this.authLogoutBtn.classList.remove('hidden');
+      if (this.authLoginBtn) this.authLoginBtn.classList.add('hidden');
+
+      if (this.authUserName) this.authUserName.textContent = user.name || 'User Account';
+      if (this.authUserEmail) this.authUserEmail.textContent = user.email;
+    } else {
+      if (this.authAccountView) this.authAccountView.classList.add('hidden');
+      if (this.authLoginView) this.authLoginView.classList.remove('hidden');
+      if (this.authLogoutBtn) this.authLogoutBtn.classList.add('hidden');
+      if (this.authLoginBtn) this.authLoginBtn.classList.remove('hidden');
+    }
+
+    if (this.vaultKeysList) {
+      this.vaultKeysList.innerHTML = '';
+      if (this.vaultCountBadge) {
+        this.vaultCountBadge.textContent = `${vaultEntries.length} Saved Keys`;
+      }
+      if (!vaultEntries || vaultEntries.length === 0) {
+        this.vaultKeysList.innerHTML = `<div class="vault-empty-note">No API keys saved yet. Turn on Auto-Save or click "Save to Vault" in Settings.</div>`;
+        return;
+      }
+
+      vaultEntries.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'vault-key-row';
+        row.innerHTML = `
+          <div class="vault-key-info">
+            <strong class="vault-key-title">${item.presetName || item.preset}</strong>
+            <span class="vault-key-url">${item.baseUrl || 'Default Endpoint'}</span>
+            <span class="vault-key-mask">${item.maskedApiKey || 'No Key'}</span>
+          </div>
+          <button class="nav-icon-btn-sm delete-vault-btn" data-preset="${item.preset}" title="Delete saved key for ${item.preset}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        `;
+        const delBtn = row.querySelector('.delete-vault-btn');
+        delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (this.callbacks.onDeleteVaultEntry) {
+            this.callbacks.onDeleteVaultEntry(item.preset);
+          }
+        });
+        this.vaultKeysList.appendChild(row);
+      });
+    }
+  }
 
   showPrivacyBanner(show) {
     if (show) this.privacyBanner.classList.remove('hidden');
@@ -649,6 +853,18 @@ export class UIController {
     bubble.className = 'message-bubble';
     bubble.id = 'active-stream-bubble';
 
+    // Modern 3-Dot Bouncing Typing Indicator
+    bubble.innerHTML = `
+      <div class="typing-indicator">
+        <div class="typing-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+        <span class="typing-label">AI is generating response...</span>
+      </div>
+    `;
+
     wrapper.appendChild(avatar);
     wrapper.appendChild(bubble);
     this.messagesList.appendChild(wrapper);
@@ -658,6 +874,8 @@ export class UIController {
   }
 
   updateStreamContent(bubble, text, reasoningText, cleanFn) {
+    if (!text && !reasoningText) return;
+
     bubble.innerHTML = '';
 
     if (reasoningText) {
@@ -667,11 +885,13 @@ export class UIController {
       bubble.appendChild(reasoningBox);
     }
 
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'markdown-body';
-    const textToDisplay = cleanFn ? cleanFn(text) : text;
-    contentDiv.innerHTML = this.formatMarkdown(textToDisplay);
-    bubble.appendChild(contentDiv);
+    if (text) {
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'markdown-body';
+      const textToDisplay = cleanFn ? cleanFn(text) : text;
+      contentDiv.innerHTML = this.formatMarkdown(textToDisplay);
+      bubble.appendChild(contentDiv);
+    }
 
     this.applySyntaxAndMath();
     this.scrollToBottom();

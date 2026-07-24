@@ -8,6 +8,7 @@ import { StreamClient } from './stream.js';
 import { UIController } from './ui.js';
 import { ArtifactManager } from './artifacts.js';
 import { ChangelogManager } from './changelog.js';
+import { AuthManager } from './auth.js';
 
 class NexusApp {
   constructor() {
@@ -17,6 +18,7 @@ class NexusApp {
     this.ui = new UIController();
     this.artifactManager = new ArtifactManager();
     this.changelogManager = new ChangelogManager('indranil122/nexus-ai-chat');
+    this.auth = new AuthManager(this.storage, this.ui);
 
     this.settings = null;
     this.sessions = [];
@@ -34,8 +36,69 @@ class NexusApp {
       this.activeSessionId = this.sessions[0].id;
     }
 
+    await this.auth.init();
+
     // 2. Initialize UI & Event Callbacks
     this.ui.init({
+      onToggleTheme: () => {
+        const currentTheme = this.storage.getTheme();
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        this.storage.setTheme(nextTheme);
+        this.ui.applyTheme(nextTheme);
+      },
+      onOpenAuthModal: async () => {
+        if (!this.auth.isLoggedIn()) {
+          window.location.href = 'login.html';
+          return;
+        }
+        const entries = await this.storage.getAllVaultEntries();
+        this.ui.updateUserAccountUI(this.auth.getUser(), entries);
+        this.ui.showAuthModal();
+      },
+      onLoginUser: async (email, name) => {
+        if (!email) {
+          alert('Please enter a valid email or username.');
+          return;
+        }
+        const user = await this.auth.loginWithEmail(email, name);
+        const entries = await this.storage.getAllVaultEntries();
+        this.ui.updateUserAccountUI(user, entries);
+        this.ui.showToast(`Signed in as ${user.email}`, 'success');
+        this.ui.hideAuthModal();
+      },
+      onLogoutUser: async () => {
+        await this.auth.logout();
+        const entries = await this.storage.getAllVaultEntries();
+        this.ui.updateUserAccountUI(null, entries);
+        this.ui.showToast('Signed out successfully.', 'info');
+      },
+      onSelectVaultEntry: async (presetId) => {
+        const entry = await this.storage.getVaultEntry(presetId);
+        if (entry) {
+          this.settings.preset = presetId;
+          this.settings.baseUrl = entry.baseUrl || (PROVIDER_PRESETS[presetId] ? PROVIDER_PRESETS[presetId].baseUrl : '');
+          this.settings.apiKey = entry.apiKey;
+          this.ui.updateSettingsForm(this.settings);
+          await this.storage.saveSettings(this.settings);
+          this.ui.showToast(`Loaded saved key for ${entry.presetName || presetId}`, 'success');
+          this.autoFetchModels();
+        }
+      },
+      onSaveCurrentToVault: async ({ preset, baseUrl, apiKey }) => {
+        const presetObj = PROVIDER_PRESETS[preset];
+        const presetName = presetObj ? presetObj.name : preset;
+        await this.storage.saveVaultEntry({ preset, baseUrl, apiKey, presetName });
+        const entries = await this.storage.getAllVaultEntries();
+        this.ui.renderSavedKeysDropdown(entries, preset);
+        this.ui.showToast(`API Key & Base URL saved to Vault for ${presetName}`, 'success');
+      },
+      onDeleteVaultEntry: async (presetId) => {
+        this.storage.deleteVaultEntry(presetId);
+        const entries = await this.storage.getAllVaultEntries();
+        this.ui.updateUserAccountUI(this.auth.getUser(), entries);
+        this.ui.renderSavedKeysDropdown(entries, this.settings.preset);
+        this.ui.showToast(`Removed saved key for ${presetId}`, 'info');
+      },
       onPresetSelect: (presetId) => this.handlePresetSelect(presetId),
       onModalPresetSelect: (presetId) => this.handleModalPresetSelect(presetId),
       onFetchModels: () => this.autoFetchModels(),
@@ -70,10 +133,17 @@ class NexusApp {
     });
 
     // 3. Update UI state
+    const currentTheme = this.storage.getTheme();
+    this.ui.applyTheme(currentTheme);
     this.ui.updateSettingsForm(this.settings);
     this.ui.showPrivacyBanner(!this.storage.isPrivacyDismissed());
     this.ui.renderSessions(this.sessions, this.activeSessionId);
     this.renderActiveSessionMessages();
+
+    // Populate Account and Key Vault UI
+    const entries = await this.storage.getAllVaultEntries();
+    this.ui.updateUserAccountUI(this.auth.getUser(), entries);
+    this.ui.renderSavedKeysDropdown(entries, this.settings.preset);
 
     // 4. Auto-Scrape models if Base URL is ready
     if (this.settings.baseUrl) {
@@ -101,24 +171,41 @@ class NexusApp {
     }
   }
 
-  handlePresetSelect(presetId) {
+  async handlePresetSelect(presetId) {
     const preset = PROVIDER_PRESETS[presetId];
     if (preset) {
       this.settings.preset = presetId;
       this.settings.selectedModel = ''; // Reset selected model so first model of new provider is auto-selected
-      if (presetId !== 'custom') {
+
+      // Auto-load saved credentials from Vault if present!
+      const vaultEntry = await this.storage.getVaultEntry(presetId);
+      if (vaultEntry && vaultEntry.apiKey) {
+        this.settings.apiKey = vaultEntry.apiKey;
+        this.settings.baseUrl = vaultEntry.baseUrl || preset.baseUrl;
+        this.ui.showToast(`Loaded saved API Key for ${preset.name}`, 'success');
+      } else if (presetId !== 'custom') {
         this.settings.baseUrl = preset.baseUrl;
       }
+
       this.ui.updateSettingsForm(this.settings);
-      this.storage.saveSettings(this.settings);
+      await this.storage.saveSettings(this.settings);
+      const entries = await this.storage.getAllVaultEntries();
+      this.ui.renderSavedKeysDropdown(entries, presetId);
       this.autoFetchModels();
     }
   }
 
-  handleModalPresetSelect(presetId) {
+  async handleModalPresetSelect(presetId) {
     const preset = PROVIDER_PRESETS[presetId];
-    if (preset && presetId !== 'custom') {
-      this.ui.modalBaseUrlInput.value = preset.baseUrl;
+    if (preset) {
+      const vaultEntry = await this.storage.getVaultEntry(presetId);
+      if (vaultEntry) {
+        if (vaultEntry.baseUrl) this.ui.modalBaseUrlInput.value = vaultEntry.baseUrl;
+        if (vaultEntry.apiKey) this.ui.modalApiKeyInput.value = vaultEntry.apiKey;
+        this.ui.showToast(`Loaded saved key for ${preset.name}`, 'info');
+      } else if (presetId !== 'custom') {
+        this.ui.modalBaseUrlInput.value = preset.baseUrl;
+      }
     }
   }
 
@@ -135,8 +222,28 @@ class NexusApp {
   }
 
   async handleSaveSettings(newSettings) {
-    this.settings = { ...this.settings, ...newSettings };
+    const { isAutoSave, ...settingsToSave } = newSettings;
+    this.settings = { ...this.settings, ...settingsToSave };
     await this.storage.saveSettings(this.settings);
+
+    // Auto-save to Vault if enabled
+    if (isAutoSave !== false && this.settings.preset && (this.settings.apiKey || this.settings.baseUrl)) {
+      const presetObj = PROVIDER_PRESETS[this.settings.preset];
+      const presetName = presetObj ? presetObj.name : this.settings.preset;
+      await this.storage.saveVaultEntry({
+        preset: this.settings.preset,
+        baseUrl: this.settings.baseUrl,
+        apiKey: this.settings.apiKey,
+        presetName: presetName
+      });
+      const entries = await this.storage.getAllVaultEntries();
+      this.ui.updateUserAccountUI(this.auth.getUser(), entries);
+      this.ui.renderSavedKeysDropdown(entries, this.settings.preset);
+      this.ui.showToast(`Settings & API Key auto-saved for ${presetName}`, 'success');
+    } else {
+      this.ui.showToast('Settings saved successfully.', 'info');
+    }
+
     this.ui.updateSettingsForm(this.settings);
     this.autoFetchModels();
   }

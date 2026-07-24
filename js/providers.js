@@ -3,6 +3,28 @@
  */
 
 export const PROVIDER_PRESETS = {
+  airouter: {
+    id: 'airouter',
+    name: 'AIRouter (https://api.airouter.in/v1)',
+    baseUrl: 'https://api.airouter.in/v1',
+    docUrl: 'https://airouter.in',
+    description: 'Unified high-speed API gateway with 199+ free and paid models (Gemini 2.5/3, DeepSeek V4, Claude 3.5/4, Qwen 3, Llama 3.3).',
+    fallbackModels: [
+      { id: 'deepseek/deepseek-v4-flash', name: 'DeepSeek V4 Flash', contextLength: 1000000, provider: 'DeepSeek', isFree: true, priceTag: 'FREE' },
+      { id: 'deepseek/deepseek-v4-pro', name: 'DeepSeek V4 Pro', contextLength: 1000000, provider: 'DeepSeek', isFree: true, priceTag: 'FREE' },
+      { id: 'google/gemini-2.5-flash', name: 'Gemini 2.5 Flash', contextLength: 1000000, provider: 'Google', isFree: true, priceTag: 'FREE' },
+      { id: 'google/gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite', contextLength: 1048576, provider: 'Google', isFree: true, priceTag: 'FREE' },
+      { id: 'google/gemini-2.5-pro', name: 'Gemini 2.5 Pro', contextLength: 1048576, provider: 'Google', isFree: true, priceTag: 'FREE' },
+      { id: 'google/gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash Lite', contextLength: 1000000, provider: 'Google', isFree: true, priceTag: 'FREE' },
+      { id: 'google/gemini-3.1-pro-preview', name: 'Gemini 3.1 Pro Preview', contextLength: 1000000, provider: 'Google', isFree: true, priceTag: 'FREE' },
+      { id: 'google/gemini-3.5-flash', name: 'Gemini 3.5 Flash', contextLength: 1000000, provider: 'Google', isFree: true, priceTag: 'FREE' },
+      { id: 'google/gemini-3.6-flash', name: 'Gemini 3.6 Flash', contextLength: 1000000, provider: 'Google', isFree: true, priceTag: 'FREE' },
+      { id: 'alibaba/qwen-3-32b', name: 'Qwen 3 32B', contextLength: 128000, provider: 'Alibaba', isFree: false, priceTag: '$0.16/1M tok' },
+      { id: 'alibaba/qwen-3-14b', name: 'Qwen 3 14B', contextLength: 40960, provider: 'Alibaba', isFree: false, priceTag: '$0.12/1M tok' },
+      { id: 'anthropic/claude-3-haiku', name: 'Claude 3 Haiku', contextLength: 200000, provider: 'Anthropic', isFree: false, priceTag: '$0.25/1M tok' },
+      { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', contextLength: 1000000, provider: 'Anthropic', isFree: false, priceTag: '$3.00/1M tok' }
+    ]
+  },
   openrouter: {
     id: 'openrouter',
     name: 'OpenRouter',
@@ -279,6 +301,16 @@ export class ProviderService {
       if (isLocal) {
         isFree = true;
         priceTag = 'FREE';
+      } else if (typeof item === 'object' && typeof item.free === 'boolean') {
+        isFree = item.free;
+        if (isFree) {
+          priceTag = 'FREE';
+        } else if (item.pricing && parseFloat(item.pricing.prompt || 0) > 0) {
+          const promptCost = parseFloat(item.pricing.prompt);
+          priceTag = `$${promptCost.toFixed(2)}/1M tok`;
+        } else {
+          priceTag = 'PAID';
+        }
       } else if (id.toLowerCase().includes(':free') || id.toLowerCase().includes('-free') || id.toLowerCase().endsWith('/free')) {
         isFree = true;
         priceTag = 'FREE';
@@ -290,8 +322,11 @@ export class ProviderService {
           priceTag = 'FREE';
         } else {
           isFree = false;
-          const promptPerM = (promptCost * 1000000).toFixed(2);
-          priceTag = `$${promptPerM}/1M tok`;
+          let promptPerM = promptCost;
+          if (promptCost > 0 && promptCost < 0.0001) {
+            promptPerM = promptCost * 1000000;
+          }
+          priceTag = `$${promptPerM.toFixed(2)}/1M tok`;
         }
       }
 

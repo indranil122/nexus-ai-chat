@@ -6,7 +6,8 @@ const STORAGE_KEYS = {
   SETTINGS: 'nexus_ai_settings',
   SESSIONS: 'nexus_ai_sessions',
   ACTIVE_SESSION: 'nexus_ai_active_session',
-  PRIVACY_DISMISSED: 'nexus_ai_privacy_dismissed'
+  PRIVACY_DISMISSED: 'nexus_ai_privacy_dismissed',
+  THEME: 'nexus_ai_theme'
 };
 
 export class StorageManager {
@@ -124,8 +125,8 @@ export class StorageManager {
   async loadSettings(passphrase = "nexus-default-salt-key") {
     const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
     const defaults = {
-      preset: 'openrouter',
-      baseUrl: 'https://openrouter.ai/api/v1',
+      preset: 'airouter',
+      baseUrl: 'https://api.airouter.in/v1',
       apiKey: '',
       selectedModel: '',
       isSessionOnly: false,
@@ -245,5 +246,111 @@ export class StorageManager {
       console.error("Failed to import backup:", e);
       return false;
     }
+  }
+
+  // Theme Preference (dark or light)
+  getTheme() {
+    return localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
+  }
+
+  setTheme(theme) {
+    localStorage.setItem(STORAGE_KEYS.THEME, theme);
+  }
+
+  // KEY VAULT STORAGE (Saved API Keys & Base URLs per tool/preset)
+  async saveVaultEntry({ preset, baseUrl, apiKey, presetName }) {
+    if (!preset) return;
+    const vault = this.getVaultMap();
+    let encryptedKey = "";
+    if (apiKey) {
+      encryptedKey = await this.encryptValue(apiKey);
+    }
+    vault[preset] = {
+      preset,
+      presetName: presetName || preset,
+      baseUrl: baseUrl || '',
+      encryptedApiKey: encryptedKey,
+      updatedAt: new Date().toISOString()
+    };
+    localStorage.setItem(STORAGE_KEYS.VAULT || 'nexus_ai_key_vault', JSON.stringify(vault));
+  }
+
+  getVaultMap() {
+    const raw = localStorage.getItem(STORAGE_KEYS.VAULT || 'nexus_ai_key_vault');
+    if (!raw) return {};
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      return {};
+    }
+  }
+
+  async getVaultEntry(preset) {
+    const vault = this.getVaultMap();
+    const entry = vault[preset];
+    if (!entry) return null;
+    let apiKey = '';
+    if (entry.encryptedApiKey) {
+      apiKey = await this.decryptValue(entry.encryptedApiKey);
+    }
+    return {
+      preset: entry.preset,
+      presetName: entry.presetName,
+      baseUrl: entry.baseUrl,
+      apiKey: apiKey,
+      updatedAt: entry.updatedAt
+    };
+  }
+
+  async getAllVaultEntries() {
+    const vault = this.getVaultMap();
+    const result = [];
+    for (const key in vault) {
+      const entry = vault[key];
+      let decryptedKey = '';
+      if (entry.encryptedApiKey) {
+        decryptedKey = await this.decryptValue(entry.encryptedApiKey);
+      }
+      result.push({
+        preset: entry.preset,
+        presetName: entry.presetName || entry.preset,
+        baseUrl: entry.baseUrl,
+        apiKey: decryptedKey,
+        maskedApiKey: this.maskApiKey(decryptedKey),
+        updatedAt: entry.updatedAt
+      });
+    }
+    return result;
+  }
+
+  deleteVaultEntry(preset) {
+    const vault = this.getVaultMap();
+    delete vault[preset];
+    localStorage.setItem(STORAGE_KEYS.VAULT || 'nexus_ai_key_vault', JSON.stringify(vault));
+  }
+
+  // Auto-Save Key Preference
+  isAutoSaveEnabled() {
+    const val = localStorage.getItem('nexus_ai_autosave_keys');
+    return val === null ? true : val === 'true';
+  }
+
+  setAutoSaveEnabled(enabled = true) {
+    localStorage.setItem('nexus_ai_autosave_keys', enabled ? 'true' : 'false');
+  }
+
+  // Account Session Storage
+  saveAccount(account) {
+    localStorage.setItem('nexus_ai_account', JSON.stringify(account));
+  }
+
+  getAccount() {
+    const raw = localStorage.getItem('nexus_ai_account');
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch (e) { return null; }
+  }
+
+  logoutAccount() {
+    localStorage.removeItem('nexus_ai_account');
   }
 }
