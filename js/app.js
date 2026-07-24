@@ -111,7 +111,6 @@ class NexusApp {
 
     // Populate Account and Key Vault UI
     const entries = await this.storage.getAllVaultEntries();
-    this.ui.updateUserAccountUI(this.auth.getUser(), entries);
     this.ui.renderSavedKeysDropdown(entries, this.settings.preset);
 
     // 4. Auto-Scrape models if Base URL is ready
@@ -133,10 +132,11 @@ class NexusApp {
       this.availableModels = models;
       this.ui.renderModelList(models, this.settings.selectedModel);
     } catch (err) {
-      console.warn('Model auto-discovery warning:', err.message);
-      const fallbacks = this.provider.getFallbackModels(this.settings.baseUrl);
-      this.availableModels = fallbacks;
-      this.ui.renderModelList(fallbacks, this.settings.selectedModel);
+      console.error('Model auto-discovery failed:', err.message);
+      this.availableModels = [];
+      this.ui.renderModelList([], '');
+      this.ui.showToast(`Failed to fetch models: ${err.message}`, 'error');
+      this.ui.selectedModelText.textContent = 'No Models Found';
     }
   }
 
@@ -206,7 +206,6 @@ class NexusApp {
         presetName: presetName
       });
       const entries = await this.storage.getAllVaultEntries();
-      this.ui.updateUserAccountUI(this.auth.getUser(), entries);
       this.ui.renderSavedKeysDropdown(entries, this.settings.preset);
       this.ui.showToast(`Settings & API Key auto-saved for ${presetName}`, 'success');
     } else {
