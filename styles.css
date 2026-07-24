@@ -85,6 +85,28 @@ body, html {
   letter-spacing: -0.005em;
 }
 
+/* ── MOBILE: allow native scroll & pinch-to-zoom ────────────────────────────
+   Mobile Chrome completely blocks zoom on elements inside an overflow:hidden
+   root. On small screens we drop the overflow lock so users can pinch-zoom
+   and the landing page can scroll naturally.
+   ──────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  html, body {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  /* When the user has launched the chatbot, restore scroll-lock so the
+     chat workspace fills the screen without page-level scroll */
+  html:has(body.app-mode), body.app-mode {
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+}
+
+
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -3192,6 +3214,15 @@ body, html {
    MOBILE RESPONSIVENESS OVERHAUL
    ========================================================================== */
 @media (max-width: 768px) {
+
+  /* ── APP CONTAINER: use full dynamic viewport height on mobile ─ */
+  .app-container {
+    height: 100dvh;
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
+    position: relative;
+  }
 
   /* ── CHATBOT TOP NAV ─────────────────────────────────────── */
   .top-nav {

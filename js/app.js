@@ -430,6 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.location.hash === '#app') {
     landingPage.style.display = 'none';
     appWorkspace.style.display = 'flex';
+    document.body.classList.add('app-mode'); // restore scroll lock on mobile
   }
   // ──────────────────────────────────────────────────────────────────────
 
@@ -441,6 +442,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     landingPage.style.display = 'none';
     appWorkspace.style.display = 'flex';
+    // On mobile: restore scroll lock so the chat UI is contained
+    document.body.classList.add('app-mode');
     if (!window.nexusAppInstance) {
       window.nexusAppInstance = new NexusApp();
       // Use requestAnimationFrame so the browser paints the app shell
@@ -462,6 +465,8 @@ document.addEventListener('DOMContentLoaded', () => {
     appWorkspace.style.display = 'none';
     landingPage.style.display = 'block';
     landingPage.classList.remove('hidden-launch');
+    // On mobile: allow the landing page to scroll/zoom freely
+    document.body.classList.remove('app-mode');
   };
 
   // Check URL hash on load (only init the app if not already done above)
