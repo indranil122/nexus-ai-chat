@@ -78,7 +78,9 @@ html {
 body, html {
   background-color: var(--canvas);
   color: var(--ink);
+  /* Use dvh (dynamic viewport height) to prevent shrink on mobile when browser chrome shows/hides */
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   letter-spacing: -0.005em;
 }
@@ -121,9 +123,12 @@ body, html {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
+  max-width: 100%;
   background-color: var(--canvas);
   animation: appFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
 }
 
 .main-body {
@@ -2370,9 +2375,7 @@ body, html {
     top: 0;
     height: 100%;
   }
-  .sidebar.collapsed {
-    margin-left: -270px;
-  }
+  /* sidebar.collapsed is handled by the main mobile overhaul above */
   .welcome-hero h2 {
     font-size: 2.1rem;
   }
@@ -3189,55 +3192,210 @@ body, html {
    MOBILE RESPONSIVENESS OVERHAUL
    ========================================================================== */
 @media (max-width: 768px) {
-  /* Top Nav Shrink */
+
+  /* ── CHATBOT TOP NAV ─────────────────────────────────────── */
   .top-nav {
-    padding: 0 12px;
-    gap: 12px;
+    padding: 0 10px;
+    gap: 8px;
+    /* Fill the available width minus the outer margin */
     width: calc(100vw - 20px);
     max-width: none;
     border-radius: var(--radius-xl);
-  }
-  
-  .brand-name { display: none; }
-  .brand-badge { display: none; }
-  .privacy-badge { display: none; }
-  #theme-toggle-btn { display: none; }
-  
-  /* Hide Preset Picker on mobile nav, only show model picker */
-  .preset-selector-wrapper { display: none; }
-  
-  /* Sidebar Overlay adjustments */
-  .sidebar {
-    width: 280px;
-    box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+    margin: 10px auto;
+    height: 50px;
+    /* Prevent items from wrapping or overflowing */
+    overflow: visible;
   }
 
-  /* Chat Messages Padding */
+  /* Hide verbose elements on mobile nav */
+  .brand-name        { display: none; }
+  .brand-badge       { display: none; }
+  .privacy-badge     { display: none; }
+  #theme-toggle-btn  { display: none; }
+  .preset-selector-wrapper { display: none; }
+
+  /* Shrink brand logo slightly */
+  .brand-logo-glow {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Model dropdown trigger — constrain width on mobile */
+  .custom-dropdown {
+    min-width: 0;
+    max-width: 180px;
+  }
+
+  .dropdown-trigger {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    max-width: 180px;
+    overflow: hidden;
+  }
+
+  /* Model dropdown MENU — full-width flyout on mobile */
+  .dropdown-menu {
+    width: calc(100vw - 24px);
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+  }
+
+  /* API Settings button — icon-only on mobile */
+  .primary-btn-outline span {
+    display: none;
+  }
+  .primary-btn-outline {
+    padding: 7px 10px;
+  }
+
+  /* ── PRIVACY BANNER ─────────────────────────────────────── */
+  .privacy-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 16px;
+    gap: 8px;
+  }
+  .banner-content {
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .banner-text p {
+    font-size: 0.74rem;
+  }
+  .banner-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* ── SIDEBAR ─────────────────────────────────────────────── */
+  .sidebar {
+    width: 280px;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.12);
+    /* Ensure it overlays the chat content */
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    z-index: 150;
+  }
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+    /* Override the conflicting margin-left rule */
+    margin-left: 0 !important;
+  }
+
+  /* ── CHAT WORKSPACE ─────────────────────────────────────── */
   .messages-container {
-    padding: 16px 12px;
+    padding: 12px 10px;
   }
-  
+
+  .messages-list {
+    gap: 14px;
+  }
+
+  /* Stack message avatar + bubble vertically */
   .message-wrapper {
-    flex-direction: column !important;
+    gap: 8px;
   }
-  
+  .message-wrapper.user {
+    flex-direction: row-reverse;
+    align-items: flex-start;
+  }
+  .message-wrapper.assistant {
+    flex-direction: row;
+    align-items: flex-start;
+  }
   .message-wrapper .avatar {
     width: 28px;
     height: 28px;
-    margin-bottom: -4px;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+  }
+  .message-bubble {
+    max-width: calc(100% - 44px);
+    padding: 12px 14px;
+    font-size: 0.88rem;
   }
 
-  .message-content {
-    max-width: 100% !important;
+  /* Hero welcome card */
+  .welcome-card {
+    padding: 16px 8px;
   }
-  
-  /* Input Area Mobile */
-  .input-area-container {
-    margin: 12px;
-    padding: 12px;
+  .hero-display-title {
+    font-size: 1.7rem;
+  }
+  .hero-greeting-sub {
+    font-size: 0.92rem;
+  }
+  .hero-ball-container {
+    width: 72px;
+    height: 72px;
   }
 
-  /* Landing Page Mobile */
+  /* Starter cards: single column on mobile */
+  .cortex-starter-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    max-width: 100%;
+    padding: 0 4px;
+  }
+  .cortex-card {
+    padding: 14px;
+  }
+
+  /* ── INPUT AREA ─────────────────────────────────────────── */
+  .input-container-wrapper {
+    padding: 10px 10px 14px 10px;
+  }
+  .input-container {
+    padding: 10px 12px;
+  }
+  .input-status-bar {
+    gap: 6px;
+  }
+  .model-pill, .provider-pill {
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    max-width: 150px;
+  }
+  .textarea-wrapper textarea {
+    font-size: 0.88rem;
+  }
+
+  /* ── ARTIFACT CANVAS ─────────────────────────────────────── */
+  .artifact-canvas {
+    width: 100%;
+    min-width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 200;
+  }
+  .canvas-header {
+    padding: 0 12px;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 60px;
+    gap: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .canvas-title-group {
+    max-width: 60%;
+  }
+  .canvas-actions {
+    gap: 4px;
+  }
+  .canvas-action-btn span {
+    display: none;
+  }
+  .canvas-action-btn {
+    padding: 6px 10px;
+  }
+
+  /* ── LEGACY LANDING PAGE STYLES ─────────────────────────── */
   .landing-hero h1 { font-size: 2.5rem; }
   .landing-hero { padding: 80px 16px 40px; }
   .landing-models-section { padding: 20px 16px 60px; }

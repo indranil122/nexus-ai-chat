@@ -25,6 +25,22 @@
   <link rel="stylesheet" href="./styles.css">
   <!-- Landing Page Stylesheet -->
   <link rel="stylesheet" href="./landing.css">
+
+  <!-- CRITICAL: Instant pre-paint hide to prevent flash/shrink on reload.
+       Runs synchronously before first render. If the user is already in
+       the chatbot (#app), hide landing & show app before any JS loads. -->
+  <script>
+    (function() {
+      if (window.location.hash === '#app') {
+        document.documentElement.style.setProperty('--lp-display', 'none');
+        // Inject a one-shot style that survives until CSS is applied
+        var s = document.createElement('style');
+        s.id = '__nexus_preload';
+        s.textContent = '#landing-page{display:none!important}#app{display:flex!important}';
+        document.head.appendChild(s);
+      }
+    })();
+  </script>
   
 
 

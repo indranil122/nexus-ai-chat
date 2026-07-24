@@ -424,13 +424,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const landingPage = document.getElementById('landing-page');
   const appWorkspace = document.getElementById('app');
 
+  // ─── INSTANT PRE-PAINT FIX ────────────────────────────────────────────
+  // If the user was already in the app (hash = #app), hide landing BEFORE
+  // the first paint so there's no flash or layout shrink on reload.
+  if (window.location.hash === '#app') {
+    landingPage.style.display = 'none';
+    appWorkspace.style.display = 'flex';
+  }
+  // ──────────────────────────────────────────────────────────────────────
+
   // Navigation & Routing Logic
   const launchAppImmediate = () => {
+    // Remove the pre-paint style tag if it exists (injected in <head>)
+    const preloadStyle = document.getElementById('__nexus_preload');
+    if (preloadStyle) preloadStyle.remove();
+
     landingPage.style.display = 'none';
     appWorkspace.style.display = 'flex';
     if (!window.nexusAppInstance) {
       window.nexusAppInstance = new NexusApp();
-      window.nexusAppInstance.init();
+      // Use requestAnimationFrame so the browser paints the app shell
+      // before we start heavy initialisation (avoids layout shrink).
+      requestAnimationFrame(() => {
+        window.nexusAppInstance.init();
+      });
     }
   };
 
@@ -443,11 +460,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const showLandingPage = () => {
     appWorkspace.style.display = 'none';
-    landingPage.style.display = 'block'; 
+    landingPage.style.display = 'block';
     landingPage.classList.remove('hidden-launch');
   };
 
-  // Check URL hash on load
+  // Check URL hash on load (only init the app if not already done above)
   if (window.location.hash === '#app') {
     launchAppImmediate();
   }
