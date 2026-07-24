@@ -44,7 +44,23 @@
   <!-- Premium Ambient Background -->
   <div id="ambient-background"></div>
 
-  <div id="app" class="app-container">
+  <!-- LANDING PAGE -->
+  <div id="landing-page" class="landing-page">
+    <div class="landing-hero">
+      <h1>Nexus<span style="color: var(--primary-coral)">AI</span></h1>
+      <p>A 100% client-side, minimalist AI workbench. Zero-server architecture. Complete privacy. Connect seamlessly to OpenRouter, Groq, NVIDIA NIM, TogetherAI, or run local models offline.</p>
+      <button id="launch-workspace-btn" class="launch-workspace-btn">Launch Workspace</button>
+    </div>
+    
+    <div class="landing-models-section">
+      <h2>Open Source Intelligence</h2>
+      <div id="landing-models-grid" class="landing-models-grid">
+        <!-- Dynamically populated via JS -->
+      </div>
+    </div>
+  </div>
+
+  <div id="app" class="app-container" style="display: none;">
 
     <!-- TOP NAVIGATION BAR -->
     <header class="top-nav">

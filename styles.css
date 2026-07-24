@@ -2965,7 +2965,236 @@ body, html {
     flex: 1;
     padding: 28px 20px;
   }
-  .login-hero-title {
-    font-size: 1.6rem;
+}
+
+/* ==========================================================================
+   LANDING PAGE (Modern Minimalist + Edge Gradients)
+   ========================================================================== */
+.landing-page {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--canvas);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+.landing-page.hidden-launch {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Subtle gradients on edges */
+.landing-page::before {
+  content: '';
+  position: fixed;
+  top: -150px; left: -150px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(204, 120, 92, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.landing-page::after {
+  content: '';
+  position: fixed;
+  bottom: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(93, 184, 166, 0.06) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.landing-hero {
+  padding: 120px 24px 60px;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.landing-hero h1 {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.landing-hero p {
+  font-size: 1.25rem;
+  color: var(--muted);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.launch-workspace-btn {
+  background: var(--primary-coral);
+  color: var(--on-primary);
+  border: none;
+  padding: 16px 36px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 24px rgba(204, 120, 92, 0.3);
+}
+
+.launch-workspace-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(204, 120, 92, 0.4);
+}
+
+.landing-models-section {
+  padding: 40px 24px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.landing-models-section h2 {
+  font-size: 2rem;
+  font-family: var(--font-display);
+  color: var(--ink);
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.landing-models-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.landing-model-card {
+  background: var(--surface-card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.landing-model-card:hover {
+  border-color: var(--primary-coral);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.model-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.model-company-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  object-fit: contain;
+  background: var(--surface-soft);
+  padding: 4px;
+}
+
+.model-card-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.model-card-id {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+.free-tag {
+  align-self: flex-start;
+  background: rgba(93, 184, 114, 0.15);
+  color: #2e8b46;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+[data-theme="dark"] .free-tag {
+  color: #6edc88;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS OVERHAUL
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Top Nav Shrink */
+  .top-nav {
+    padding: 0 12px;
+    gap: 12px;
+    width: calc(100vw - 20px);
+    max-width: none;
+    border-radius: var(--radius-xl);
+  }
+  
+  .brand-name { display: none; }
+  .brand-badge { display: none; }
+  .privacy-badge { display: none; }
+  #theme-toggle-btn { display: none; }
+  
+  /* Hide Preset Picker on mobile nav, only show model picker */
+  .preset-selector-wrapper { display: none; }
+  
+  /* Sidebar Overlay adjustments */
+  .sidebar {
+    width: 280px;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+  }
+
+  /* Chat Messages Padding */
+  .messages-container {
+    padding: 16px 12px;
+  }
+  
+  .message-wrapper {
+    flex-direction: column !important;
+  }
+  
+  .message-wrapper .avatar {
+    width: 28px;
+    height: 28px;
+    margin-bottom: -4px;
+  }
+
+  .message-content {
+    max-width: 100% !important;
+  }
+  
+  /* Input Area Mobile */
+  .input-area-container {
+    margin: 12px;
+    padding: 12px;
+  }
+
+  /* Landing Page Mobile */
+  .landing-hero h1 { font-size: 2.5rem; }
+  .landing-hero { padding: 80px 16px 40px; }
+  .landing-models-section { padding: 20px 16px 60px; }
+  .landing-models-grid {
+    grid-template-columns: 1fr;
   }
 }

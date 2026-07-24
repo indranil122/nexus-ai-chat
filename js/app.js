@@ -398,8 +398,74 @@ class NexusApp {
   }
 }
 
+// Function to get a logo URL based on the model provider ID prefix
+function getProviderLogo(modelId) {
+  const prefix = modelId.split('/')[0].toLowerCase();
+  const logos = {
+    'meta-llama': 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Meta_Platforms_Inc._logo.svg',
+    'mistralai': 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mistral_AI_logo.svg',
+    'anthropic': 'https://upload.wikimedia.org/wikipedia/commons/7/78/Anthropic_logo.svg',
+    'google': 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg',
+    'openai': 'https://upload.wikimedia.org/wikipedia/commons/4/4d/OpenAI_Logo.svg',
+    'microsoft': 'https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg',
+    'cohere': 'https://asset.brandfetch.io/id8yTz18l4/id-C2Oepm.svg',
+    'qwen': 'https://upload.wikimedia.org/wikipedia/commons/5/51/Qwen_logo.png',
+    'deepseek': 'https://chat.deepseek.com/favicon.svg',
+    'nvidia': 'https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg',
+    'databricks': 'https://upload.wikimedia.org/wikipedia/commons/6/63/Databricks_Logo.png'
+  };
+  return logos[prefix] || 'https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg';
+}
+
 // Start application when DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-  const app = new NexusApp();
-  app.init();
+  const launchBtn = document.getElementById('launch-workspace-btn');
+  const landingPage = document.getElementById('landing-page');
+  const appWorkspace = document.getElementById('app');
+
+  // Launch workspace logic
+  launchBtn.addEventListener('click', () => {
+    landingPage.classList.add('hidden-launch');
+    setTimeout(() => {
+      landingPage.style.display = 'none';
+      appWorkspace.style.display = 'flex';
+      const app = new NexusApp();
+      app.init();
+    }, 500); // Wait for CSS transition
+  });
+
+  // Dynamically scrape models for landing page
+  async function loadLandingModels() {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/models');
+      const data = await response.json();
+      const grid = document.getElementById('landing-models-grid');
+      grid.innerHTML = '';
+      
+      const models = data.data || [];
+
+      models.forEach(model => {
+        // Determine if model is free
+        const isFree = model.pricing && (model.pricing.prompt === "0" || model.pricing.prompt === "0.0");
+        const logoUrl = getProviderLogo(model.id);
+        
+        const card = document.createElement('div');
+        card.className = 'landing-model-card';
+        card.innerHTML = `
+          <div class="model-card-header">
+            <img src="${logoUrl}" alt="Logo" class="model-company-logo" onerror="this.style.opacity='0'">
+            <div class="model-card-title" title="${model.name}">${model.name}</div>
+          </div>
+          <div class="model-card-id">${model.id}</div>
+          ${isFree ? '<div class="free-tag">100% Free API</div>' : ''}
+        `;
+        grid.appendChild(card);
+      });
+    } catch (e) {
+      console.error('Error fetching landing page models:', e);
+      document.getElementById('landing-models-grid').innerHTML = '<p style="color:var(--muted)">Failed to load models. Please check your connection.</p>';
+    }
+  }
+
+  loadLandingModels();
 });
