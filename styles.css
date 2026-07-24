@@ -12,6 +12,7 @@
   --surface-dark: #000000;
   --surface-dark-elevated: #111111;
   --surface-dark-soft: #222222;
+  --nav-bg: rgba(250, 249, 245, 0.75);
   
   /* Hairlines & Borders */
   --hairline: #eaeaea;
@@ -64,6 +65,7 @@
   --surface-dark: #000000;
   --surface-dark-elevated: #111111;
   --surface-dark-soft: #1a1a1a;
+  --nav-bg: rgba(0, 0, 0, 0.75);
 
   /* Hairlines & Borders - Pure Crisp Gray Lines */
   --hairline: #262626;
@@ -261,14 +263,22 @@ body, html {
    TOP NAVIGATION BAR (Warm Cream + Coral Accent)
    ========================================================================== */
 .top-nav {
-  height: 64px;
-  background: var(--canvas);
-  border-bottom: 1px solid var(--hairline);
+  height: 58px;
+  background: var(--nav-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-pill);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 14px 0 24px;
+  margin: 16px auto;
   z-index: 100;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.03);
+  width: max-content;
+  max-width: 96vw;
+  gap: 24px;
 }
 
 .nav-left, .nav-center, .nav-right {
@@ -699,17 +709,23 @@ body, html {
 }
 
 .sidebar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
   width: 270px;
-  background: var(--surface-soft);
+  background: color-mix(in srgb, var(--canvas) 95%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-right: 1px solid var(--hairline);
   display: flex;
   flex-direction: column;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 50;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 150;
 }
 
 .sidebar.collapsed {
-  margin-left: -270px;
+  transform: translateX(-100%);
 }
 
 .sidebar-top-group {
