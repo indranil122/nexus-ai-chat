@@ -135,7 +135,15 @@ class NexusApp {
       console.error('Model auto-discovery failed:', err.message);
       this.availableModels = [];
       this.ui.renderModelList([], '');
-      this.ui.showToast(`Failed to fetch models: ${err.message}`, 'error');
+      
+      let userMsg = `Failed to fetch models: ${err.message}`;
+      if (err.message.includes('401') || err.message.includes('403')) {
+        userMsg = 'Please provide a valid API Key to load models.';
+      } else if (err.message.includes('Failed to fetch') || err.message.includes('CONNECTION_REFUSED')) {
+        userMsg = 'Connection refused. Is the local server running?';
+      }
+      
+      this.ui.showToast(userMsg, 'error');
       this.ui.selectedModelText.textContent = 'No Models Found';
     }
   }
@@ -186,7 +194,13 @@ class NexusApp {
       this.availableModels = models;
       this.ui.renderModelList(models, this.settings.selectedModel);
     } catch (err) {
-      this.ui.setModalStatus(`Connection Failed: ${err.message}`, true);
+      let userMsg = err.message;
+      if (err.message.includes('401') || err.message.includes('403')) {
+        userMsg = 'Please provide a valid API Key to load models.';
+      } else if (err.message.includes('Failed to fetch') || err.message.includes('CONNECTION_REFUSED')) {
+        userMsg = 'Connection refused. Is the local server running?';
+      }
+      this.ui.setModalStatus(`Connection Failed: ${userMsg}`, true);
     }
   }
 
