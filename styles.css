@@ -1453,6 +1453,122 @@ body, html {
   border-color: #d8b4fe;
 }
 
+/* ==========================================================================
+   CORTEX 3D SPHERE & HERO WORKBENCH
+   ========================================================================== */
+.welcome-card {
+  position: relative;
+  max-width: 840px;
+  width: 100%;
+  margin: 10px auto;
+  text-align: center;
+  padding: 20px 10px;
+  animation: heroCascade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Smooth Flowing Ambient Line (Empty State) */
+.flowing-beam-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 400px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flowing-beam {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(204,120,92,0.9) 25%, rgba(139,92,246,0.9) 50%, rgba(59,130,246,0.9) 75%, transparent 100%);
+  background-size: 200% 100%;
+  animation: flowingBeamMove 5s linear infinite, flowingBeamPulse 3s ease-in-out infinite alternate;
+  filter: blur(1px);
+}
+
+.flowing-beam::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  transform: translateY(-50%);
+  background: inherit;
+  filter: blur(25px);
+  opacity: 0.7;
+}
+
+@keyframes flowingBeamMove {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes flowingBeamPulse {
+  0% { transform: scaleY(1); opacity: 0.5; }
+  100% { transform: scaleY(3); opacity: 1; }
+}
+
+/* 3D Floating Translucent Fluid Sphere */
+.cortex-hero-graphic {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.hero-ball-container {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: transparent;
+  border: 2px solid var(--hairline);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: floatSphere 5s ease-in-out infinite alternate;
+}
+
+.hero-ball-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+@keyframes floatSphere {
+  0% { transform: translateY(0) scale(1) rotate(0deg); }
+  100% { transform: translateY(-14px) scale(1.04) rotate(12deg); }
+}
+
+.welcome-hero {
+  margin-bottom: 24px;
+}
+
+.hero-greeting-sub {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--primary-coral);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.hero-display-title {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
 .hero-send-circle-btn {
   width: 34px;
   height: 34px;
