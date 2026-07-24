@@ -17,9 +17,7 @@ export class AuthManager {
       try {
         this.clerk = window.Clerk;
         if (!this.clerk.loaded && typeof this.clerk.load === 'function') {
-          // Initialize if publishable key is injected
-          const publishableKey = window.CLERK_PUBLISHABLE_KEY || 'pk_test_dG9sZXJhbnQtaGVuLTgwLmNsZXJrLmFjY291bnRzLmRldiQ';
-          await this.clerk.load({ publishableKey });
+          await this.clerk.load();
         }
 
         if (this.clerk.user) {

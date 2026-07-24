@@ -3,12 +3,7 @@ import { StorageManager } from './storage.js';
 const storage = new StorageManager();
 
 async function init() {
-  const googleBtn = document.getElementById('google-sso-btn');
-  const githubBtn = document.getElementById('github-sso-btn');
-  const emailForm = document.getElementById('email-sign-in-form');
-  const signUpBtn = document.getElementById('sign-up-btn');
   const clerkMount = document.getElementById('clerk-page-mount');
-  const simpleForm = document.getElementById('simple-auth-form');
 
   // Check existing login session
   const existing = storage.getAccount();
@@ -17,21 +12,25 @@ async function init() {
     return;
   }
 
-  // Initialize Clerk SDK if present
+  // Poll for window.Clerk to be available from CDN
+  let attempts = 0;
+  while (!window.Clerk && attempts < 20) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    attempts++;
+  }
+
   if (window.Clerk) {
     try {
       const clerk = window.Clerk;
-      if (!clerk.loaded && typeof clerk.load === 'function') {
-        await clerk.load({
-          publishableKey: window.CLERK_PUBLISHABLE_KEY || 'pk_test_dG9sZXJhbnQtaGVuLTgwLmNsZXJrLmFjY291bnRzLmRldiQ'
-        });
-      }
+      
+      // Unconditionally await load to ensure UI components are fully ready
+      await clerk.load();
 
       // If user is already authenticated via Clerk SSO
       if (clerk.user) {
         saveUserAndRedirect({
           id: clerk.user.id,
-          name: clerk.user.fullName || clerk.user.firstName || clerk.user.primaryEmailAddress.emailAddress,
+          name: clerk.user.fullName || clerk.user.firstName || clerk.user.primaryEmailAddress?.emailAddress || 'User',
           email: clerk.user.primaryEmailAddress ? clerk.user.primaryEmailAddress.emailAddress : 'Authenticated User',
           avatar: clerk.user.imageUrl,
           provider: 'Clerk SSO'
@@ -39,71 +38,40 @@ async function init() {
         return;
       }
 
-      // Try mounting official Clerk UI component if available
+      // Try mounting official Clerk UI component
       if (clerkMount && typeof clerk.mountSignIn === 'function') {
         try {
+          console.log('Mounting Clerk Sign-In to element:', clerkMount);
+          clerkMount.innerHTML = ''; // clear loading state
+          
           clerk.mountSignIn(clerkMount, {
+            routing: 'hash',
             appearance: {
               variables: { colorPrimary: '#ffffff', colorBackground: 'transparent', colorText: '#ffffff' }
             }
           });
-          if (simpleForm) simpleForm.style.display = 'none';
+          
+          console.log('Successfully called mountSignIn!');
+          
+          // Debug checking if it rendered anything after a slight delay
+          setTimeout(() => {
+            console.log('Clerk mount contents:', clerkMount.innerHTML);
+          }, 1000);
+          
         } catch (e) {
-          console.log('Clerk mount notice, fallback active:', e);
+          console.error('Clerk mount error:', e);
+          clerkMount.innerHTML = `<div style="color:red">Error loading sign-in: ${e.message}</div>`;
         }
-      }
-
-      // Authentic Google SSO Button Handler (Opens real Google Account Selector)
-      if (googleBtn) {
-        googleBtn.addEventListener('click', async () => {
-          try {
-            if (clerk && typeof clerk.authenticateWithRedirect === 'function') {
-              await clerk.authenticateWithRedirect({
-                strategy: 'oauth_google',
-                redirectUrl: window.location.origin + '/index.html',
-                redirectUrlComplete: window.location.origin + '/index.html'
-              });
-            } else {
-              alert('Clerk Authentication SDK is initializing. Please try clicking again in a second.');
-            }
-          } catch (err) {
-            console.error('Google OAuth Error:', err);
-            alert('Google Sign-In Notice: ' + err.message);
-          }
-        });
+      } else {
+        console.warn('clerkMount element or clerk.mountSignIn function is missing!', { clerkMount, hasMountSignIn: typeof clerk?.mountSignIn });
       }
 
     } catch (err) {
-      console.warn('Clerk SDK notice:', err);
+      console.error('Clerk SDK init error:', err);
+      clerkMount.innerHTML = `<div style="color:red">Failed to initialize Clerk SDK: ${err.message}</div>`;
     }
-  }
-
-  // Email Sign In Submit Handler
-  if (emailForm) {
-    emailForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      if (!email) return;
-      saveUserAndRedirect({
-        id: 'usr_' + Date.now(),
-        name: email.split('@')[0],
-        email: email,
-        provider: 'Email & Password'
-      });
-    });
-  }
-
-  // Create Account / Sign Up Button Handler
-  if (signUpBtn) {
-    signUpBtn.addEventListener('click', () => {
-      const email = document.getElementById('login-email').value || 'newuser@nexusai.io';
-      saveUserAndRedirect({
-        id: 'usr_' + Date.now(),
-        name: email.split('@')[0],
-        email: email,
-        provider: 'New Registered User'
-      });
-    });
+  } else {
+    clerkMount.innerHTML = `<div style="color:red">Failed to load Clerk script from CDN.</div>`;
   }
 }
 
@@ -112,4 +80,4 @@ function saveUserAndRedirect(user) {
   window.location.href = 'index.html';
 }
 
-document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('load', init);
