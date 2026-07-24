@@ -451,6 +451,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Hero Code Stream Simulation
+  const heroCodeElem = document.getElementById('hero-code-stream');
+  if (heroCodeElem) {
+    const codeSnippet = `import { useState } from "react";
+
+export function Pricing() {
+  const [yearly, setYearly] = useState(false);
+  const plans = [
+    { name: "Starter", price: yearly ? 9 : 12 },
+    { name: "Pro",     price: yearly ? 24 : 32, featured: true },
+    { name: "Team",    price: yearly ? 49 : 64 },
+  ];
+  return (
+    <section className="grid">
+      {plans.map(p => (
+        <article key={p.name} data-featured={p.featured}>
+          <h3>{p.name}</h3>
+          <span>\${p.price}<small>/mo</small></span>
+          <button>Get started</button>
+        </article>
+      ))}
+    </section>
+  );
+}`;
+    let progress = 0;
+    setInterval(() => {
+      progress = progress >= codeSnippet.length ? 0 : progress + 4;
+      heroCodeElem.textContent = codeSnippet.slice(0, progress);
+    }, 35);
+  }
+
   // Dynamically scrape models for landing page
   async function loadLandingModels() {
     try {
