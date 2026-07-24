@@ -3,15 +3,9 @@
  */
 
 export const Animations = {
-  // Sidebar animation
+  // Sidebar animation (Handled purely by CSS transform now)
   animateSidebar(sidebarElement, isCollapsed) {
-    anime({
-      targets: sidebarElement,
-      width: isCollapsed ? '0px' : '260px',
-      opacity: isCollapsed ? 0 : 1,
-      duration: 400,
-      easing: 'easeOutExpo'
-    });
+    // No-op, using CSS transitions for smoother overlay sliding
   },
 
   // Modal animations (Settings, Privacy)

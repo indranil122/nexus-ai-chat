@@ -3096,15 +3096,18 @@ body, html {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
 }
 
 .model-company-logo {
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   object-fit: contain;
-  background: var(--surface-soft);
+  background: #ffffff; /* White background for transparent logos */
   padding: 4px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .model-card-title {
@@ -3114,6 +3117,7 @@ body, html {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex-grow: 1;
 }
 
 .model-card-id {

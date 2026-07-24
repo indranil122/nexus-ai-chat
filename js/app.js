@@ -396,25 +396,23 @@ class NexusApp {
       alert('Failed to import backup. Please check file format.');
     }
   }
-}
-
-// Function to get a logo URL based on the model provider ID prefix
-function getProviderLogo(modelId) {
+// Function to fetch highly reliable brand logos via Clearbit API
+function getProviderLogoHTML(modelId, fallbackName) {
   const prefix = modelId.split('/')[0].toLowerCase();
-  const logos = {
-    'meta-llama': 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Meta_Platforms_Inc._logo.svg',
-    'mistralai': 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mistral_AI_logo.svg',
-    'anthropic': 'https://upload.wikimedia.org/wikipedia/commons/7/78/Anthropic_logo.svg',
-    'google': 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg',
-    'openai': 'https://upload.wikimedia.org/wikipedia/commons/4/4d/OpenAI_Logo.svg',
-    'microsoft': 'https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg',
-    'cohere': 'https://asset.brandfetch.io/id8yTz18l4/id-C2Oepm.svg',
-    'qwen': 'https://upload.wikimedia.org/wikipedia/commons/5/51/Qwen_logo.png',
-    'deepseek': 'https://chat.deepseek.com/favicon.svg',
-    'nvidia': 'https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg',
-    'databricks': 'https://upload.wikimedia.org/wikipedia/commons/6/63/Databricks_Logo.png'
+  
+  const domains = {
+    'meta-llama': 'meta.com',
+    'mistralai': 'mistral.ai',
+    'google': 'google.com',
+    'microsoft': 'microsoft.com',
+    'qwen': 'qwenlm.ai',
+    'deepseek': 'deepseek.com'
   };
-  return logos[prefix] || 'https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg';
+  
+  const domain = domains[prefix] || 'github.com';
+  const logoUrl = `https://logo.clearbit.com/${domain}`;
+  
+  return `<img src="${logoUrl}" alt="${prefix} Logo" class="model-company-logo" onerror="this.src='https://ui-avatars.com/api/?name=${fallbackName}&background=random&color=fff&rounded=true&bold=true'">`;
 }
 
 // Start application when DOM ready
@@ -443,17 +441,33 @@ document.addEventListener('DOMContentLoaded', () => {
       grid.innerHTML = '';
       
       const models = data.data || [];
+      
+      // Dynamically select one top model from each major open-source provider
+      const desiredProviders = ['meta-llama', 'mistralai', 'qwen', 'deepseek', 'google', 'microsoft'];
+      const displayModels = [];
+      
+      desiredProviders.forEach(provider => {
+        const providerModels = models.filter(m => m.id.startsWith(provider + '/'));
+        if (providerModels.length > 0) {
+          // Try to find a free model first to highlight the "Free API" tag
+          let selected = providerModels.find(m => m.pricing && (m.pricing.prompt === "0" || m.pricing.prompt === "0.0"));
+          // Fallback to the first available model from that provider
+          if (!selected) selected = providerModels[0];
+          
+          displayModels.push(selected);
+        }
+      });
 
-      models.forEach(model => {
+      displayModels.forEach(model => {
         // Determine if model is free
         const isFree = model.pricing && (model.pricing.prompt === "0" || model.pricing.prompt === "0.0");
-        const logoUrl = getProviderLogo(model.id);
+        const logoHTML = getProviderLogoHTML(model.id, model.name.split(' ')[0]);
         
         const card = document.createElement('div');
         card.className = 'landing-model-card';
         card.innerHTML = `
           <div class="model-card-header">
-            <img src="${logoUrl}" alt="Logo" class="model-company-logo" onerror="this.style.opacity='0'">
+            ${logoHTML}
             <div class="model-card-title" title="${model.name}">${model.name}</div>
           </div>
           <div class="model-card-id">${model.id}</div>
