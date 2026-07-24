@@ -108,7 +108,7 @@ body, html {
   border-radius: var(--radius-pill);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-soft);
+  background: var(--muted);
 }
 
 /* Main Container Layout */
@@ -118,6 +118,13 @@ body, html {
   height: 100vh;
   width: 100vw;
   background-color: var(--canvas);
+}
+
+.main-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
 }
 
 /* ==========================================================================

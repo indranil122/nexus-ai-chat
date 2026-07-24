@@ -424,30 +424,55 @@ document.addEventListener('DOMContentLoaded', () => {
   const landingPage = document.getElementById('landing-page');
   const appWorkspace = document.getElementById('app');
 
-  // Launch workspace logic
+  // Navigation & Routing Logic
+  const launchAppImmediate = () => {
+    landingPage.style.display = 'none';
+    appWorkspace.style.display = 'flex';
+    if (!window.nexusAppInstance) {
+      window.nexusAppInstance = new NexusApp();
+      window.nexusAppInstance.init();
+    }
+  };
+
+  const launchAppAnimated = () => {
+    landingPage.classList.add('hidden-launch');
+    setTimeout(launchAppImmediate, 500);
+  };
+
+  const showLandingPage = () => {
+    appWorkspace.style.display = 'none';
+    landingPage.style.display = 'block'; 
+    landingPage.classList.remove('hidden-launch');
+  };
+
+  // Check URL hash on load
+  if (window.location.hash === '#app') {
+    launchAppImmediate();
+  }
+
+  // Handle hash changes (e.g. back button)
+  window.addEventListener('hashchange', () => {
+    if (window.location.hash === '#app') {
+      launchAppImmediate();
+    } else if (window.location.hash === '' || window.location.hash === '#') {
+      showLandingPage();
+    }
+  });
+
   if (launchBtn) {
-    launchBtn.addEventListener('click', () => {
-      landingPage.classList.add('hidden-launch');
-      setTimeout(() => {
-        landingPage.style.display = 'none';
-        appWorkspace.style.display = 'flex';
-        const app = new NexusApp();
-        app.init();
-      }, 500);
+    launchBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = 'app';
+      launchAppAnimated();
     });
   }
   
-  // Also listen on the hero body CTA button
   const heroBtn2 = document.getElementById('hero-launch-btn-2');
   if (heroBtn2) {
-    heroBtn2.addEventListener('click', () => {
-      landingPage.classList.add('hidden-launch');
-      setTimeout(() => {
-        landingPage.style.display = 'none';
-        appWorkspace.style.display = 'flex';
-        const app = new NexusApp();
-        app.init();
-      }, 500);
+    heroBtn2.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = 'app';
+      launchAppAnimated();
     });
   }
 
