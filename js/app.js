@@ -396,21 +396,24 @@ class NexusApp {
       alert('Failed to import backup. Please check file format.');
     }
   }
-// Function to fetch highly reliable brand logos via Clearbit API
+}
+
+// Function to fetch official, high-quality brand logos via GitHub Organization Avatars
 function getProviderLogoHTML(modelId, fallbackName) {
   const prefix = modelId.split('/')[0].toLowerCase();
   
-  const domains = {
-    'meta-llama': 'meta.com',
-    'mistralai': 'mistral.ai',
-    'google': 'google.com',
-    'microsoft': 'microsoft.com',
-    'qwen': 'qwenlm.ai',
-    'deepseek': 'deepseek.com'
+  const githubOrgs = {
+    'meta-llama': 'meta',
+    'mistralai': 'mistralai',
+    'google': 'google',
+    'microsoft': 'microsoft',
+    'qwen': 'QwenLM',
+    'deepseek': 'deepseek-ai'
   };
   
-  const domain = domains[prefix] || 'github.com';
-  const logoUrl = `https://logo.clearbit.com/${domain}`;
+  const org = githubOrgs[prefix] || 'github';
+  // GitHub avatars are 100% reliable, not blocked by adblockers, and are the exact official logos
+  const logoUrl = `https://github.com/${org}.png`;
   
   return `<img src="${logoUrl}" alt="${prefix} Logo" class="model-company-logo" onerror="this.src='https://ui-avatars.com/api/?name=${fallbackName}&background=random&color=fff&rounded=true&bold=true'">`;
 }
