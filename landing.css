@@ -73,10 +73,18 @@
 }
 
 .lp-nav-logo-text {
-  font-size: 15px;
+  font-family: var(--font-display);
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--ink);
+}
+
+.lp-nav-logo-text .highlight {
+  color: var(--primary-coral);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
 }
 
 .lp-nav-links {
