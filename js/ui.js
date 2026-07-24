@@ -60,22 +60,6 @@ export class UIController {
     this.testConnectionBtn = document.getElementById('test-connection-btn');
     this.saveSettingsBtn = document.getElementById('save-settings-btn');
 
-    // Auth & Vault elements
-    this.openAuthBtn = document.getElementById('open-auth-btn');
-    this.navUserName = document.getElementById('nav-user-name');
-    this.authModal = document.getElementById('auth-modal');
-    this.closeAuthBtn = document.getElementById('close-auth-btn');
-    this.authLoginBtn = document.getElementById('auth-login-btn');
-    this.authLogoutBtn = document.getElementById('auth-logout-btn');
-    this.authEmailInput = document.getElementById('auth-email-input');
-    this.authNameInput = document.getElementById('auth-name-input');
-    this.authAccountView = document.getElementById('auth-account-view');
-    this.authLoginView = document.getElementById('auth-login-view');
-    this.authUserName = document.getElementById('auth-user-name');
-    this.authUserEmail = document.getElementById('auth-user-email');
-    this.vaultKeysList = document.getElementById('vault-keys-list');
-    this.vaultCountBadge = document.getElementById('vault-count-badge');
-
     // Settings Vault & Autosave elements
     this.savedKeysSelect = document.getElementById('saved-keys-select');
     this.saveCurrentVaultBtn = document.getElementById('save-current-vault-btn');
@@ -375,27 +359,6 @@ export class UIController {
       this.hideSettingsModal();
     });
 
-    // Auth & Vault listeners
-    if (this.openAuthBtn) {
-      this.openAuthBtn.addEventListener('click', () => {
-        if (this.callbacks.onOpenAuthModal) this.callbacks.onOpenAuthModal();
-      });
-    }
-    if (this.closeAuthBtn) {
-      this.closeAuthBtn.addEventListener('click', () => this.hideAuthModal());
-    }
-    if (this.authLoginBtn) {
-      this.authLoginBtn.addEventListener('click', () => {
-        const email = this.authEmailInput.value;
-        const name = this.authNameInput.value;
-        if (this.callbacks.onLoginUser) this.callbacks.onLoginUser(email, name);
-      });
-    }
-    if (this.authLogoutBtn) {
-      this.authLogoutBtn.addEventListener('click', () => {
-        if (this.callbacks.onLogoutUser) this.callbacks.onLogoutUser();
-      });
-    }
     if (this.savedKeysSelect) {
       this.savedKeysSelect.addEventListener('change', (e) => {
         const preset = e.target.value;
@@ -620,8 +583,7 @@ export class UIController {
   hidePrivacyModal() { Animations.animateModalClose(this.privacyModal); }
   showChangelogModal() { Animations.animateModalOpen(this.changelogModal); }
   hideChangelogModal() { Animations.animateModalClose(this.changelogModal); }
-  showAuthModal() { Animations.animateModalOpen(this.authModal); }
-  hideAuthModal() { Animations.animateModalClose(this.authModal); }
+
 
   // Toast Notification System
   showToast(message, type = 'info') {
@@ -677,62 +639,6 @@ export class UIController {
       }
       this.savedKeysSelect.appendChild(opt);
     });
-  }
-
-  // Update Account UI & Vault Summary
-  updateUserAccountUI(user, vaultEntries = []) {
-    if (this.navUserName) {
-      this.navUserName.textContent = user && user.email ? (user.name || user.email) : 'Account / Sign In';
-    }
-
-    if (user && user.email && user.id) {
-      if (this.authAccountView) this.authAccountView.classList.remove('hidden');
-      if (this.authLoginView) this.authLoginView.classList.add('hidden');
-      if (this.authLogoutBtn) this.authLogoutBtn.classList.remove('hidden');
-      if (this.authLoginBtn) this.authLoginBtn.classList.add('hidden');
-
-      if (this.authUserName) this.authUserName.textContent = user.name || 'User Account';
-      if (this.authUserEmail) this.authUserEmail.textContent = user.email;
-    } else {
-      if (this.authAccountView) this.authAccountView.classList.add('hidden');
-      if (this.authLoginView) this.authLoginView.classList.remove('hidden');
-      if (this.authLogoutBtn) this.authLogoutBtn.classList.add('hidden');
-      if (this.authLoginBtn) this.authLoginBtn.classList.remove('hidden');
-    }
-
-    if (this.vaultKeysList) {
-      this.vaultKeysList.innerHTML = '';
-      if (this.vaultCountBadge) {
-        this.vaultCountBadge.textContent = `${vaultEntries.length} Saved Keys`;
-      }
-      if (!vaultEntries || vaultEntries.length === 0) {
-        this.vaultKeysList.innerHTML = `<div class="vault-empty-note">No API keys saved yet. Turn on Auto-Save or click "Save to Vault" in Settings.</div>`;
-        return;
-      }
-
-      vaultEntries.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'vault-key-row';
-        row.innerHTML = `
-          <div class="vault-key-info">
-            <strong class="vault-key-title">${item.presetName || item.preset}</strong>
-            <span class="vault-key-url">${item.baseUrl || 'Default Endpoint'}</span>
-            <span class="vault-key-mask">${item.maskedApiKey || 'No Key'}</span>
-          </div>
-          <button class="nav-icon-btn-sm delete-vault-btn" data-preset="${item.preset}" title="Delete saved key for ${item.preset}">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-          </button>
-        `;
-        const delBtn = row.querySelector('.delete-vault-btn');
-        delBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (this.callbacks.onDeleteVaultEntry) {
-            this.callbacks.onDeleteVaultEntry(item.preset);
-          }
-        });
-        this.vaultKeysList.appendChild(row);
-      });
-    }
   }
 
   showPrivacyBanner(show) {

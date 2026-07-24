@@ -8,7 +8,6 @@ import { StreamClient } from './stream.js';
 import { UIController } from './ui.js';
 import { ArtifactManager } from './artifacts.js';
 import { ChangelogManager } from './changelog.js';
-import { AuthManager } from './auth.js';
 
 class NexusApp {
   constructor() {
@@ -18,7 +17,6 @@ class NexusApp {
     this.ui = new UIController();
     this.artifactManager = new ArtifactManager();
     this.changelogManager = new ChangelogManager('indranil122/nexus-ai-chat');
-    this.auth = new AuthManager(this.storage, this.ui);
 
     this.settings = null;
     this.sessions = [];
@@ -36,8 +34,6 @@ class NexusApp {
       this.activeSessionId = this.sessions[0].id;
     }
 
-    await this.auth.init();
-
     // 2. Initialize UI & Event Callbacks
     this.ui.init({
       onToggleTheme: () => {
@@ -45,32 +41,6 @@ class NexusApp {
         const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
         this.storage.setTheme(nextTheme);
         this.ui.applyTheme(nextTheme);
-      },
-      onOpenAuthModal: async () => {
-        if (!this.auth.isLoggedIn()) {
-          window.location.href = 'login.html';
-          return;
-        }
-        const entries = await this.storage.getAllVaultEntries();
-        this.ui.updateUserAccountUI(this.auth.getUser(), entries);
-        this.ui.showAuthModal();
-      },
-      onLoginUser: async (email, name) => {
-        if (!email) {
-          alert('Please enter a valid email or username.');
-          return;
-        }
-        const user = await this.auth.loginWithEmail(email, name);
-        const entries = await this.storage.getAllVaultEntries();
-        this.ui.updateUserAccountUI(user, entries);
-        this.ui.showToast(`Signed in as ${user.email}`, 'success');
-        this.ui.hideAuthModal();
-      },
-      onLogoutUser: async () => {
-        await this.auth.logout();
-        const entries = await this.storage.getAllVaultEntries();
-        this.ui.updateUserAccountUI(null, entries);
-        this.ui.showToast('Signed out successfully.', 'info');
       },
       onSelectVaultEntry: async (presetId) => {
         const entry = await this.storage.getVaultEntry(presetId);
@@ -95,7 +65,6 @@ class NexusApp {
       onDeleteVaultEntry: async (presetId) => {
         this.storage.deleteVaultEntry(presetId);
         const entries = await this.storage.getAllVaultEntries();
-        this.ui.updateUserAccountUI(this.auth.getUser(), entries);
         this.ui.renderSavedKeysDropdown(entries, this.settings.preset);
         this.ui.showToast(`Removed saved key for ${presetId}`, 'info');
       },
