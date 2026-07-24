@@ -33,36 +33,10 @@
 
   <!-- App Stylesheet -->
   <link rel="stylesheet" href="./styles.css">
-
-  <!-- Tailwind CSS v4 CDN for the landing page -->
-  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <!-- Landing Page Stylesheet -->
+  <link rel="stylesheet" href="./landing.css">
   
-  <style type="text/tailwindcss">
-    @theme {
-      --color-primary-coral: #eb4826;
-      --color-primary-coral-active: #cc3f21;
-      
-      --animate-marquee: marquee 30s linear infinite;
-      --animate-marquee-slow: marquee 45s linear infinite;
 
-      @keyframes marquee {
-        0% { transform: translateX(0%); }
-        100% { transform: translateX(-50%); }
-      }
-    }
-    
-    @layer base {
-      html, body {
-        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif !important;
-      }
-    }
-    
-    /* Ensure tailwind doesn't override our existing custom styles too harshly */
-    #landing-page {
-      background-color: var(--canvas);
-      color: var(--ink);
-    }
-  </style>
 
   <!-- External Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js" defer></script>
@@ -75,198 +49,162 @@
   <!-- Premium Ambient Background -->
   <div id="ambient-background"></div>
 
-  <!-- LANDING PAGE (Tailwind Container) -->
-  <div id="landing-page" class="landing-page" style="z-index: 1000; min-height: 100vh; overflow-y: auto; overflow-x: hidden;">
+  <!-- LANDING PAGE -->
+  <div id="landing-page">
     
-    <!-- STICKY NAV BAR -->
-    <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4" style="background: color-mix(in srgb, var(--canvas) 80%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border);">
-      <!-- Logo -->
-      <div class="flex items-center gap-2.5">
-        <div class="h-7 w-7 rounded-lg flex items-center justify-center" style="background: #eb4826;">
+    <!-- NAV -->
+    <nav class="lp-nav">
+      <div class="lp-nav-logo">
+        <div class="lp-nav-logo-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
-        <span class="text-[15px] font-semibold tracking-tight" style="color: var(--fg);">NexusAI</span>
+        <span class="lp-nav-logo-text">NexusAI</span>
       </div>
       
-      <!-- Nav Links -->
-      <div class="hidden md:flex items-center gap-6 text-[13.5px] font-medium" style="color: var(--fg-soft);">
-        <a href="#providers" class="hover:text-white transition-colors">Providers</a>
-        <a href="#models" class="hover:text-white transition-colors">Free Models</a>
-        <a href="#features" class="hover:text-white transition-colors">Features</a>
+      <div class="lp-nav-links">
+        <a href="#providers">Providers</a>
+        <a href="#models">Free Models</a>
+        <a href="#features">Features</a>
       </div>
 
-      <!-- Right Actions -->
-      <div class="flex items-center gap-3">
-        <!-- Theme toggle -->
-        <button id="landing-theme-toggle" class="h-8 w-8 rounded-lg flex items-center justify-center transition-all" style="background: var(--bg-soft); border: 1px solid var(--border); color: var(--fg-soft);" title="Toggle theme">
-          <svg id="landing-theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <div class="lp-nav-actions">
+        <button id="landing-theme-toggle" class="lp-theme-btn" title="Toggle theme">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         </button>
-        <button id="hero-launch-btn" class="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-[13px] font-medium transition-all hover:opacity-90" style="background: #eb4826; color: white;">
+        <button id="hero-launch-btn" class="lp-cta-btn">
           Open Chatbot
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
     </nav>
 
-    <main class="w-full flex flex-col items-center overflow-x-hidden">
-      
-      <!-- HERO SECTION -->
-      <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 w-full px-6" style="max-width: 100%;">
-        <div class="absolute top-32 left-[8%] h-72 w-72 rounded-full blur-3xl opacity-40 pointer-events-none" style="background: rgba(235,72,38,0.15);"></div>
-        <div class="absolute top-60 right-[5%] h-96 w-96 rounded-full blur-3xl opacity-30 pointer-events-none" style="background: rgba(139,92,246,0.15);"></div>
-
-        <div class="mx-auto max-w-[1280px] relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 items-center">
-          
-          <!-- LEFT — Copy -->
-          <div class="relative">
-            <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[12px] transition-all" style="border-color: var(--border); background: var(--bg-elev); color: var(--fg-soft);">
-              <span class="relative flex h-1.5 w-1.5">
-                <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60 animate-ping"></span>
-                <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-              </span>
-              <span>Version 2.4 · Now with Live Canvas</span>
-            </div>
-
-            <h1 class="mt-6 text-[44px] sm:text-[56px] lg:text-[68px] leading-[0.98] tracking-[-0.035em] font-semibold" style="color: var(--fg);">
-              Every Open-Source AI Model.<br>
-              <span class="italic font-normal">One Workspace.</span><br>
-              <span style="color: var(--fg-muted);">Zero Servers.</span>
-            </h1>
-
-            <p class="mt-6 max-w-[560px] text-[16.5px] leading-[1.6]" style="color: var(--fg-soft);">
-              Connect OpenRouter, NVIDIA NIM, Groq, Together AI, Fireworks, DeepInfra, Ollama, LM Studio and more from one beautiful workspace. Bring your own API keys, discover free models instantly, and keep every prompt completely private.
-            </p>
-
-            <div class="mt-8 flex flex-wrap items-center gap-3">
-              <button id="hero-launch-btn" class="group inline-flex items-center gap-2 rounded-xl px-5 py-3 text-[14px] font-medium transition-all hover:opacity-90" style="background: #eb4826; color: white;">
-                Start Building
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="transition-transform group-hover:translate-x-0.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </button>
-              <a href="#models" class="group inline-flex items-center gap-2 rounded-xl px-5 py-3 text-[14px] font-medium transition-all" style="background: var(--bg-soft); color: var(--fg); border: 1px solid var(--border);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                Explore Free Models
-              </a>
-            </div>
-
-            <ul class="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2.5">
-              <li class="inline-flex items-center gap-1.5 text-[12.5px]" style="color: var(--fg-soft);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"></polyline></svg> 100% Client Side</li>
-              <li class="inline-flex items-center gap-1.5 text-[12.5px]" style="color: var(--fg-soft);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"></polyline></svg> Zero Server</li>
-              <li class="inline-flex items-center gap-1.5 text-[12.5px]" style="color: var(--fg-soft);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"></polyline></svg> Local AI Ready</li>
-            </ul>
-          </div>
-
-          <!-- RIGHT — Product preview mockup -->
-          <div class="relative hidden lg:block rounded-2xl border overflow-hidden shadow-[0_30px_80px_-30px_rgba(0,0,0,0.18)]" style="border-color: var(--border); background: var(--bg-elev);">
-            <div class="flex items-center justify-between border-b px-4 py-2.5" style="border-color: var(--border);">
-              <div class="flex items-center gap-1.5">
-                <span class="h-2.5 w-2.5 rounded-full" style="background: var(--border);"></span>
-                <span class="h-2.5 w-2.5 rounded-full" style="background: var(--border);"></span>
-                <span class="h-2.5 w-2.5 rounded-full" style="background: var(--border);"></span>
-              </div>
-              <div class="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-mono" style="background: var(--bg-soft); border: 1px solid var(--border); color: var(--fg-muted);">
-                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                nexus.ai/workspace
-              </div>
-              <div class="w-4"></div>
-            </div>
-            
-            <div class="p-6 h-[350px] flex flex-col gap-4 text-[13px] font-mono" style="color: var(--fg-soft);">
-              <div class="flex gap-3">
-                <div class="h-6 w-6 rounded-md shrink-0" style="background: var(--bg-soft); border: 1px solid var(--border);"></div>
-                <div class="rounded-xl rounded-tl-sm p-3 max-w-[80%]" style="background: var(--bg-soft); border: 1px solid var(--border); color: var(--fg);">
-                  Analyze this dataset using DeepSeek R1 reasoning.
-                </div>
-              </div>
-              <div class="flex gap-3">
-                <div class="h-6 w-6 rounded-md shrink-0 flex items-center justify-center text-white" style="background: var(--primary-coral);">✨</div>
-                <div class="rounded-xl rounded-tl-sm p-3 max-w-[80%]" style="background: var(--bg-elev); border: 1px solid var(--border); color: var(--fg);">
-                  Here is the analysis based on local inference...<br><br>
-                  <div class="h-2 w-32 rounded mt-2 bg-gray-500/20"></div>
-                  <div class="h-2 w-48 rounded mt-2 bg-gray-500/20"></div>
-                  <div class="h-2 w-24 rounded mt-2 bg-gray-500/20"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-      
-      <!-- PROVIDER MARQUEE -->
-      <section id="providers" class="relative py-20 border-y w-full mt-10 overflow-hidden" style="border-color: var(--border); background: var(--bg-soft);">
-        <div class="mx-auto max-w-[1280px] px-6 mb-10 w-full">
-          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-            <div>
-              <p class="text-[12px] uppercase tracking-[0.2em] mb-3" style="color: var(--fg-muted);">Universal compatibility</p>
-              <h2 class="text-[28px] sm:text-[32px] tracking-[-0.02em] font-semibold" style="color: var(--fg);">Every provider you actually use.</h2>
-            </div>
-            <p class="text-[14.5px] max-w-md" style="color: var(--fg-soft);">One workspace, twelve integrations. Switch models without changing your workflow.</p>
-          </div>
+    <!-- HERO -->
+    <div class="lp-hero">
+      <!-- LEFT -->
+      <div>
+        <div class="lp-hero-badge">
+          <div class="lp-pulse-dot"><span></span><span></span></div>
+          Version 2.4 &middot; Now with Live Canvas
         </div>
 
-        <div class="relative overflow-hidden w-full max-w-[100vw]">
-          <div class="absolute left-0 top-0 bottom-0 w-32 z-10 pointer-events-none" style="background: linear-gradient(to right, var(--bg) 0%, transparent 100%);"></div>
-          <div class="absolute right-0 top-0 bottom-0 w-32 z-10 pointer-events-none" style="background: linear-gradient(to left, var(--bg) 0%, transparent 100%);"></div>
+        <h1>
+          Every Open-Source AI Model.<br>
+          <em>One Workspace.</em><br>
+          <span class="lp-muted-line">Zero Servers.</span>
+        </h1>
 
-          <!-- Marquee Track -->
-          <div class="flex animate-marquee whitespace-nowrap w-max">
-            <!-- First Set -->
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">O</span><span class="text-[20px] tracking-[-0.01em] font-medium">OpenRouter</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">G</span><span class="text-[20px] tracking-[-0.01em] font-medium">Groq</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">N</span><span class="text-[20px] tracking-[-0.01em] font-medium">NVIDIA NIM</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">T</span><span class="text-[20px] tracking-[-0.01em] font-medium">Together AI</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">O</span><span class="text-[20px] tracking-[-0.01em] font-medium">Ollama</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">L</span><span class="text-[20px] tracking-[-0.01em] font-medium">LM Studio</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">M</span><span class="text-[20px] tracking-[-0.01em] font-medium">Mistral</span></div>
-            
-            <!-- Duplicated Set for infinite loop -->
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">O</span><span class="text-[20px] tracking-[-0.01em] font-medium">OpenRouter</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">G</span><span class="text-[20px] tracking-[-0.01em] font-medium">Groq</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">N</span><span class="text-[20px] tracking-[-0.01em] font-medium">NVIDIA NIM</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">T</span><span class="text-[20px] tracking-[-0.01em] font-medium">Together AI</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">O</span><span class="text-[20px] tracking-[-0.01em] font-medium">Ollama</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">L</span><span class="text-[20px] tracking-[-0.01em] font-medium">LM Studio</span></div>
-            <div class="inline-flex items-center gap-3 mx-8 transition-colors hover:text-white" style="color: var(--fg-soft);"><span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-[13px] font-semibold tracking-tight" style="border-color: var(--border); background: var(--bg-elev);">M</span><span class="text-[20px] tracking-[-0.01em] font-medium">Mistral</span></div>
-          </div>
-        </div>
-      </section>
-      
-      <!-- FREE MODELS -->
-      <section id="models" class="relative py-28 md:py-36 w-full max-w-[1280px] px-6 mx-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 lg:items-end mb-12">
-          <div>
-            <p class="text-[12px] uppercase tracking-[0.2em] mb-4" style="color: var(--fg-muted);">
-              <span class="inline-flex items-center gap-2">
-                <span class="relative flex h-1.5 w-1.5">
-                  <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60 animate-ping"></span>
-                  <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                </span>
-                Live · Fetched from OpenRouter
-              </span>
-            </p>
-            <h2 class="text-[44px] sm:text-[56px] lg:text-[64px] leading-[1.02] tracking-[-0.035em] font-semibold" style="color: var(--fg);">
-              Free Models <span class="italic font-normal" style="color: var(--fg-soft);">available right now.</span>
-            </h2>
-            <p class="mt-5 text-[16px] max-w-xl" style="color: var(--fg-soft);">
-              Automatically fetched from providers in real time. Filter by capability, find the perfect free model, and start building in seconds.
-            </p>
-          </div>
-        </div>
+        <p class="lp-hero-desc">
+          Connect OpenRouter, NVIDIA NIM, Groq, Together AI, Fireworks, DeepInfra, Ollama, LM Studio and more from one beautiful workspace. Bring your own API keys, discover free models instantly, and keep every prompt completely private.
+        </p>
 
-        <!-- Cards Grid -->
-        <div id="landing-models-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-          <!-- Dynamically populated by app.js -->
-        </div>
-
-        <div class="mt-10 flex items-center justify-center">
-          <a href="#" class="group inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-[13.5px] font-medium transition-all" style="background: var(--bg-soft); color: var(--fg); border: 1px solid var(--border);">
-            View all 100+ free models
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+        <div class="lp-hero-actions">
+          <button class="lp-btn-primary" id="hero-launch-btn-2">
+            Start Building
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <a href="#models" class="lp-btn-secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Explore Free Models
           </a>
         </div>
-      </section>
-  </div>
+
+        <ul class="lp-hero-badges">
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> 100% Client Side</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Zero Server</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Local AI Ready</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Open Source Friendly</li>
+        </ul>
+      </div>
+
+      <!-- RIGHT — Mockup -->
+      <div class="lp-hero-mockup">
+        <div class="lp-mockup-window">
+          <div class="lp-mockup-titlebar">
+            <div class="lp-mockup-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="lp-mockup-url">
+              <span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block;"></span>
+              nexus.ai/workspace
+            </div>
+            <div></div>
+          </div>
+          <div class="lp-mockup-body">
+            <div class="lp-chat-msg">
+              <div class="lp-chat-avatar"></div>
+              <div class="lp-chat-bubble">Analyze this dataset using DeepSeek R1 reasoning.</div>
+            </div>
+            <div class="lp-chat-msg">
+              <div class="lp-chat-avatar ai">✦</div>
+              <div class="lp-chat-bubble ai">
+                Here is the analysis based on local inference...
+                <div class="lp-skeleton" style="width: 80%;"></div>
+                <div class="lp-skeleton" style="width: 65%;"></div>
+                <div class="lp-skeleton" style="width: 45%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROVIDER MARQUEE -->
+    <section id="providers" class="lp-marquee-section">
+      <div class="lp-marquee-header">
+        <div>
+          <div class="lp-marquee-label">Universal compatibility</div>
+          <h2>Every provider you actually use.</h2>
+        </div>
+        <p>One workspace, twelve integrations. Switch models without changing your workflow.</p>
+      </div>
+
+      <div class="lp-marquee-wrapper">
+        <div class="lp-marquee-fade-left"></div>
+        <div class="lp-marquee-fade-right"></div>
+        <div class="lp-marquee-track">
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">O</div><span class="lp-marquee-name">OpenRouter</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">G</div><span class="lp-marquee-name">Groq</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">N</div><span class="lp-marquee-name">NVIDIA NIM</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">T</div><span class="lp-marquee-name">Together AI</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">F</div><span class="lp-marquee-name">Fireworks</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">O</div><span class="lp-marquee-name">Ollama</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">L</div><span class="lp-marquee-name">LM Studio</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">M</div><span class="lp-marquee-name">Mistral</span></div>
+          <!-- Duplicate for seamless loop -->
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">O</div><span class="lp-marquee-name">OpenRouter</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">G</div><span class="lp-marquee-name">Groq</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">N</div><span class="lp-marquee-name">NVIDIA NIM</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">T</div><span class="lp-marquee-name">Together AI</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">F</div><span class="lp-marquee-name">Fireworks</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">O</div><span class="lp-marquee-name">Ollama</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">L</div><span class="lp-marquee-name">LM Studio</span></div>
+          <div class="lp-marquee-item"><div class="lp-marquee-icon">M</div><span class="lp-marquee-name">Mistral</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FREE MODELS -->
+    <section id="models" class="lp-models-section">
+      <div class="lp-section-label">
+        <span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block;"></span>
+        Live &middot; Fetched from OpenRouter
+      </div>
+      <h2>Free Models <em>available right now.</em></h2>
+      <p class="lp-models-desc">Automatically fetched from providers in real time. Find the perfect free model and start building in seconds.</p>
+
+      <div id="landing-models-grid">
+        <!-- Dynamically populated by app.js -->
+      </div>
+
+      <div class="lp-models-footer">
+        <a href="#" class="lp-btn-secondary">
+          View all 100+ free models
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+      </div>
+    </section>
+
+  </div>  </div>
 
   <div id="app" class="app-container" style="display: none;">
 
