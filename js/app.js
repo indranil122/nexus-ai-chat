@@ -420,20 +420,22 @@ function getProviderLogoHTML(modelId, fallbackName) {
 
 // Start application when DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-  const launchBtn = document.getElementById('launch-workspace-btn');
+  const launchBtn = document.getElementById('hero-launch-btn');
   const landingPage = document.getElementById('landing-page');
   const appWorkspace = document.getElementById('app');
 
   // Launch workspace logic
-  launchBtn.addEventListener('click', () => {
-    landingPage.classList.add('hidden-launch');
-    setTimeout(() => {
-      landingPage.style.display = 'none';
-      appWorkspace.style.display = 'flex';
-      const app = new NexusApp();
-      app.init();
-    }, 500); // Wait for CSS transition
-  });
+  if (launchBtn) {
+    launchBtn.addEventListener('click', () => {
+      landingPage.classList.add('hidden-launch');
+      setTimeout(() => {
+        landingPage.style.display = 'none';
+        appWorkspace.style.display = 'flex';
+        const app = new NexusApp();
+        app.init();
+      }, 500); // Wait for CSS transition
+    });
+  }
 
   // Dynamically scrape models for landing page
   async function loadLandingModels() {
