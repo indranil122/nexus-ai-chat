@@ -1082,3 +1082,107 @@
   .lp-pf-tagline { font-size: 11px; letter-spacing: 0.15em; }
   .lp-pf-bottom { flex-direction: column; gap: 16px; text-align: center; padding: 24px; }
 }
+
+/* FLOATING VIDEO */
+.lp-floating-video-wrap {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 800px;
+  max-width: calc(100vw - 40px);
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: #000;
+  z-index: 1001;
+  transform: translateY(150%);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease, width 0.5s cubic-bezier(0.16, 1, 0.3, 1), height 0.5s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.5s cubic-bezier(0.16, 1, 0.3, 1), right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-floating-video-wrap.visible-video {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.lp-floating-video-wrap.minimized-video {
+  width: 320px;
+  height: 180px;
+  bottom: 20px;
+  right: 20px;
+}
+
+#lp-floating-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.lp-video-controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.lp-video-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s;
+}
+
+.lp-video-action-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.lp-video-action-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .lp-floating-video-wrap {
+    width: calc(100vw - 32px);
+    height: calc(100vh - 32px);
+    bottom: 16px;
+    right: 16px;
+  }
+  .lp-floating-video-wrap.minimized-video {
+    width: 220px;
+    height: 124px;
+    bottom: 16px;
+    right: 16px;
+  }
+  .lp-video-controls {
+    top: 12px;
+    right: 12px;
+    gap: 8px;
+  }
+  .lp-video-action-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .lp-video-action-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+

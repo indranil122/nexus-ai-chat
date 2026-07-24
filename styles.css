@@ -848,6 +848,7 @@ body, html {
 .messages-container {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 24px 20px;
   display: flex;
   flex-direction: column;
@@ -1118,6 +1119,7 @@ body, html {
   display: flex;
   gap: 8px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .model-pill, .provider-pill {
@@ -1128,6 +1130,10 @@ body, html {
   font-weight: 600;
   padding: 3px 10px;
   border-radius: var(--radius-pill);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .textarea-wrapper {

@@ -577,4 +577,59 @@ export function Pricing() {
   }
 
   loadLandingModels();
+
+  // Floating Video Logic
+  const floatingVideoWrap = document.getElementById('lp-floating-video-wrap');
+  const closeVideoBtn = document.getElementById('lp-close-video-btn');
+  const toggleSizeBtn = document.getElementById('lp-toggle-size-btn');
+  const floatingVideo = document.getElementById('lp-floating-video');
+  let videoClosed = false;
+  let isMinimized = false;
+
+  if (floatingVideoWrap && floatingVideo && landingPage) {
+    landingPage.addEventListener('scroll', () => {
+      if (videoClosed) return;
+      if (landingPage.scrollTop > 300) {
+        floatingVideoWrap.classList.add('visible-video');
+        // Play the video if not playing
+        if (floatingVideo.paused) {
+          floatingVideo.play().catch(e => console.log('Autoplay prevented', e));
+        }
+      } else {
+        floatingVideoWrap.classList.remove('visible-video');
+        floatingVideo.pause();
+      }
+    });
+
+    if (toggleSizeBtn) {
+      const iconMinimize = toggleSizeBtn.querySelector('.icon-minimize');
+      const iconExpand = toggleSizeBtn.querySelector('.icon-expand');
+      
+      toggleSizeBtn.addEventListener('click', () => {
+        isMinimized = !isMinimized;
+        if (isMinimized) {
+          floatingVideoWrap.classList.add('minimized-video');
+          iconMinimize.style.display = 'none';
+          iconExpand.style.display = 'block';
+        } else {
+          floatingVideoWrap.classList.remove('minimized-video');
+          iconMinimize.style.display = 'block';
+          iconExpand.style.display = 'none';
+        }
+      });
+    }
+
+    if (closeVideoBtn) {
+      closeVideoBtn.addEventListener('click', () => {
+        videoClosed = true;
+        floatingVideoWrap.style.display = 'none';
+        floatingVideo.pause();
+      });
+    }
+
+    floatingVideo.addEventListener('ended', () => {
+      videoClosed = true;
+      floatingVideoWrap.style.display = 'none';
+    });
+  }
 });
