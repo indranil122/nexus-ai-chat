@@ -33,6 +33,7 @@ export class UIController {
     // Nav elements
     this.toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
     this.sidebar = document.getElementById('sidebar');
+    this.sidebarBackdrop = document.getElementById('sidebar-backdrop');
     this.privacyBadgeBtn = document.getElementById('privacy-badge-btn');
     this.providerPresetSelect = document.getElementById('provider-preset-select');
     this.themeToggleBtn = document.getElementById('theme-toggle-btn');
@@ -217,15 +218,16 @@ export class UIController {
     });
     // Sidebar toggle
     this.toggleSidebarBtn.addEventListener('click', () => {
-      const isCollapsed = this.sidebar.classList.contains('collapsed');
-      if (isCollapsed) {
-        this.sidebar.classList.remove('collapsed');
-        Animations.animateSidebar(this.sidebar, false);
-      } else {
-        this.sidebar.classList.add('collapsed');
-        Animations.animateSidebar(this.sidebar, true);
-      }
+      this.toggleSidebar();
     });
+
+    if (this.sidebarBackdrop) {
+      this.sidebarBackdrop.addEventListener('click', () => {
+        if (!this.sidebar.classList.contains('collapsed')) {
+          this.toggleSidebar();
+        }
+      });
+    }
 
     // Accordions — smooth max-height transition
     this.systemPromptToggle.addEventListener('click', () => {
@@ -430,6 +432,13 @@ export class UIController {
         reader.readAsText(file);
       }
     });
+
+    // Hide backdrop when resizing to desktop width
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768 && this.sidebarBackdrop) {
+        this.sidebarBackdrop.classList.remove('visible');
+      }
+    });
   }
 
   submitPrompt() {
@@ -607,6 +616,22 @@ export class UIController {
   hidePrivacyModal() { Animations.animateModalClose(this.privacyModal); }
   showChangelogModal() { Animations.animateModalOpen(this.changelogModal); }
   hideChangelogModal() { Animations.animateModalClose(this.changelogModal); }
+
+  // Toggle sidebar with backdrop overlay on mobile
+  toggleSidebar() {
+    const isCollapsed = this.sidebar.classList.contains('collapsed');
+    if (isCollapsed) {
+      this.sidebar.classList.remove('collapsed');
+      if (this.sidebarBackdrop) {
+        this.sidebarBackdrop.classList.add('visible');
+      }
+    } else {
+      this.sidebar.classList.add('collapsed');
+      if (this.sidebarBackdrop) {
+        this.sidebarBackdrop.classList.remove('visible');
+      }
+    }
+  }
 
 
   // Toast Notification System

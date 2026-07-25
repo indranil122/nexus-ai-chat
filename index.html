@@ -121,10 +121,19 @@
       </div>
 
       <div class="lp-nav-actions">
+        <button id="lp-hamburger-btn" class="lp-hamburger-btn" aria-label="Toggle navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
         <button id="hero-launch-btn" class="lp-cta-btn">
           Open Chatbot
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
+      </div>
+      <div id="lp-mobile-menu" class="lp-mobile-menu">
+        <a href="#providers">Providers</a>
+        <a href="#models">Free Models</a>
       </div>
     </nav>
 
@@ -525,6 +534,7 @@
     <div class="main-body">
 
       <!-- LEFT SIDEBAR DRAWER (Cortex-inspired Layout) -->
+      <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
       <aside id="sidebar" class="sidebar">
         <div class="sidebar-top-group">
           <button id="new-chat-btn" class="primary-btn block-btn pill-btn">

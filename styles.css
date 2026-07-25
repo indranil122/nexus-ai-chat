@@ -3419,6 +3419,22 @@ body, html {
     justify-content: flex-end;
   }
 
+  /* ── SIDEBAR BACKDROP ──────────────────────────────────── */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 20, 19, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 140;
+    opacity: 0;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .sidebar-backdrop.visible {
+    display: block;
+    opacity: 1;
+  }
+
   /* ── SIDEBAR ─────────────────────────────────────────────── */
   .sidebar {
     width: 280px;
@@ -3552,5 +3568,50 @@ body, html {
   .landing-models-section { padding: 20px 16px 60px; }
   .landing-models-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* ── TOUCH TARGETS — minimum 44px for interactive elements ── */
+  .nav-icon-btn, .nav-icon-btn-sm { min-width: 44px; min-height: 44px; }
+  .primary-btn, .send-btn { min-height: 44px; padding: 12px 20px; }
+  .secondary-btn { min-height: 44px; }
+  .sidebar-nav-item { min-height: 44px; }
+  .session-item { min-height: 44px; }
+  .dropdown-trigger { min-height: 44px; }
+  .canvas-action-btn { min-height: 44px; }
+  .canvas-close-btn { min-width: 44px; min-height: 44px; }
+  .filter-tab { min-height: 44px; padding: 8px 14px; }
+  .model-item { min-height: 48px; padding: 12px 14px; }
+  .stop-btn { min-height: 44px; }
+
+  /* ── SAFE AREA INSETS for notched / rounded-screen devices ── */
+  @supports (padding: env(safe-area-inset-top)) {
+    .app-container {
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
+    }
+    .top-nav {
+      margin-top: calc(10px + env(safe-area-inset-top, 0px));
+    }
+    .input-container-wrapper {
+      padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    }
+    .sidebar {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+  }
+
+  /* ── MODALS — full-width on very small screens ─────────────── */
+  .modal-card {
+    max-width: 98%;
+    width: 98%;
+    border-radius: var(--radius-lg);
+  }
+  .split-auth-card {
+    flex-direction: column;
+    height: auto;
+    max-height: 98vh;
+    border-radius: var(--radius-lg);
   }
 }
