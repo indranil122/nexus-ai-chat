@@ -482,7 +482,7 @@ export class UIController {
       item.addEventListener('click', () => {
         this.setSelectedModel(model.id);
         this.callbacks.onSelectModel(model.id);
-        this.modelDropdownMenu.classList.add('hidden');
+        Animations.animateDropdownClose(this.modelDropdownMenu);
       });
       this.modelListContainer.appendChild(item);
     });
@@ -544,6 +544,14 @@ export class UIController {
     this.selectedModel = modelId;
     this.selectedModelText.textContent = modelId || 'Select Model';
     this.activeModelTag.textContent = modelId || 'No Model';
+
+    // Brief highlight pulse on the trigger text when model name changes
+    if (modelId) {
+      this.selectedModelText.classList.remove('model-highlight');
+      // Force reflow so the animation re-triggers
+      void this.selectedModelText.offsetWidth;
+      this.selectedModelText.classList.add('model-highlight');
+    }
   }
 
   applyTheme(theme) {

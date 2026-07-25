@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
       launchAppAnimated();
     });
   }
-  
+
   const heroBtn2 = document.getElementById('hero-launch-btn-2');
   if (heroBtn2) {
     heroBtn2.addEventListener('click', (e) => {
@@ -497,6 +497,28 @@ document.addEventListener('DOMContentLoaded', () => {
       launchAppAnimated();
     });
   }
+
+  // Smooth scroll landing nav anchor links — #landing-page is position:fixed
+  // so native anchor scrolling targets the locked body instead of the container.
+  document.querySelectorAll('.lp-nav-links a[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute('href').slice(1);
+      const target = document.getElementById(targetId);
+      if (target) {
+        // Use getBoundingClientRect for reliable positioning inside fixed container
+        const rect = target.getBoundingClientRect();
+        const scrollTarget = landingPage.scrollTop + rect.top - 80;
+        landingPage.scrollTo({
+          top: Math.max(0, scrollTarget),
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+      }
+    });
+  });
 
   // Hero Code Stream Simulation
   const heroCodeElem = document.getElementById('hero-code-stream');
