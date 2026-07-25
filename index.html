@@ -73,10 +73,13 @@
 
   <!-- CRITICAL: Instant pre-paint hide to prevent flash/shrink on reload.
        Runs synchronously before first render. If the user is already in
-       the chatbot (#app), hide landing & show app before any JS loads. -->
+       the chatbot (/app), hide landing & show app before any JS loads. -->
   <script>
     (function() {
-      if (window.location.hash === '#app') {
+      if (window.location.pathname === '/app' || window.location.hash === '#app') {
+        window.scrollTo(0, 0);
+        if (document.documentElement) document.documentElement.scrollTop = 0;
+        if (document.body) document.body.scrollTop = 0;
         document.documentElement.style.setProperty('--lp-display', 'none');
         // Inject a one-shot style that survives until CSS is applied
         var s = document.createElement('style');

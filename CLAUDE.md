@@ -9,7 +9,7 @@ NexusAI Chat is a **100% client-side, zero-server** AI workbench. Everything run
 ## Key Commands
 
 - `npm install` — installs anime.js dependency
-- `npm run dev` — starts a static server on port 3000 (`npx serve -l 3000`)
+- `npm run dev` — starts a static server on port 3000 with SPA fallback (`npx serve -s -l 3000`)
 - Open `index.html` directly or serve via any static file server
 
 ## Architecture

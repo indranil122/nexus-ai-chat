@@ -424,69 +424,76 @@ document.addEventListener('DOMContentLoaded', () => {
   const landingPage = document.getElementById('landing-page');
   const appWorkspace = document.getElementById('app');
 
-  // ─── INSTANT PRE-PAINT FIX ────────────────────────────────────────────
-  // If the user was already in the app (hash = #app), hide landing BEFORE
-  // the first paint so there's no flash or layout shrink on reload.
-  if (window.location.hash === '#app') {
-    landingPage.style.display = 'none';
-    appWorkspace.style.display = 'flex';
-    document.body.classList.add('app-mode'); // restore scroll lock on mobile
-  }
-  // ──────────────────────────────────────────────────────────────────────
+  // ─── ROUTING ────────────────────────────────────────────────────
+  // Use history.pushState so URLs are / and /app (not # and #app).
 
-  // Navigation & Routing Logic
-  const launchAppImmediate = () => {
-    // Remove the pre-paint style tag if it exists (injected in <head>)
+  const routeToApp = () => {
     const preloadStyle = document.getElementById('__nexus_preload');
     if (preloadStyle) preloadStyle.remove();
-
     landingPage.style.display = 'none';
     appWorkspace.style.display = 'flex';
-    // On mobile: restore scroll lock so the chat UI is contained
+    
+    // CRITICAL FIX: Reset window and document scroll to 0,0 BEFORE locking body overflow
+    window.scrollTo(0, 0);
+    if (document.body) document.body.scrollTop = 0;
+    if (document.documentElement) document.documentElement.scrollTop = 0;
+
     document.body.classList.add('app-mode');
     if (!window.nexusAppInstance) {
       window.nexusAppInstance = new NexusApp();
-      // Use requestAnimationFrame so the browser paints the app shell
-      // before we start heavy initialisation (avoids layout shrink).
       requestAnimationFrame(() => {
         window.nexusAppInstance.init();
       });
     }
   };
 
-  const launchAppAnimated = () => {
-    landingPage.classList.add('hidden-launch');
-    setTimeout(() => {
-      window.location.hash = 'app';
-    }, 400);
-  };
-
-  const showLandingPage = () => {
+  const routeToLanding = () => {
     appWorkspace.style.display = 'none';
     landingPage.style.display = 'block';
     landingPage.classList.remove('hidden-launch');
-    // On mobile: allow the landing page to scroll/zoom freely
     document.body.classList.remove('app-mode');
+    window.scrollTo(0, 0);
   };
 
-  // Check URL hash on load (only init the app if not already done above)
-  if (window.location.hash === '#app') {
-    launchAppImmediate();
+  const navigateToApp = () => {
+    landingPage.classList.add('hidden-launch');
+    setTimeout(() => {
+      history.pushState({ view: 'app' }, '', '/app');
+      routeToApp();
+    }, 400);
+  };
+
+  const navigateToLanding = () => {
+    history.pushState({ view: 'landing' }, '', '/');
+    routeToLanding();
+  };
+
+  // On initial load, check the URL path or hash
+  if (window.location.pathname === '/app' || window.location.hash === '#app') {
+    routeToApp();
   }
 
-  // Handle hash changes (e.g. back button)
+  // Handle browser back/forward and hash changes
+  window.addEventListener('popstate', () => {
+    if (window.location.pathname === '/app' || window.location.hash === '#app') {
+      routeToApp();
+    } else {
+      routeToLanding();
+    }
+  });
+
   window.addEventListener('hashchange', () => {
-    if (window.location.hash === '#app') {
-      launchAppImmediate();
+    if (window.location.hash === '#app' || window.location.pathname === '/app') {
+      routeToApp();
     } else if (window.location.hash === '' || window.location.hash === '#') {
-      showLandingPage();
+      routeToLanding();
     }
   });
 
   if (launchBtn) {
     launchBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      launchAppAnimated();
+      navigateToApp();
     });
   }
 
@@ -494,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (heroBtn2) {
     heroBtn2.addEventListener('click', (e) => {
       e.preventDefault();
-      launchAppAnimated();
+      navigateToApp();
     });
   }
 
@@ -513,9 +520,6 @@ document.addEventListener('DOMContentLoaded', () => {
           top: Math.max(0, scrollTarget),
           behavior: 'smooth'
         });
-      }
-    });
-  });
       }
     });
   });

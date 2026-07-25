@@ -74,7 +74,7 @@ cd nexus-ai-chat
 npm install
 
 # Open index.html in your browser or serve via static server
-npx serve .
+npx serve -s .
 ```
 
 ---
