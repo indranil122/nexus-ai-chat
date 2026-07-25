@@ -505,6 +505,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Home button — return to landing page
+  const homeBtn = document.getElementById('home-btn');
+  if (homeBtn) {
+    homeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateToLanding();
+    });
+  }
+
   // Smooth scroll landing nav anchor links — #landing-page is position:fixed
   // so native anchor scrolling targets the locked body instead of the container.
   document.querySelectorAll('.lp-nav-links a[href^="#"]').forEach(link => {

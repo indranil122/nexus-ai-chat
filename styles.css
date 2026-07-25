@@ -3386,10 +3386,14 @@ body, html {
 
   /* Model dropdown MENU — full-width flyout on mobile */
   .dropdown-menu {
-    width: calc(100vw - 24px);
-    left: 50%;
-    transform: translateX(-50%);
-    right: auto;
+    position: fixed;
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    transform: none;
+    max-height: 60vh;
+    border-radius: var(--radius-lg);
   }
 
   /* API Settings button — icon-only on mobile */
@@ -3445,11 +3449,16 @@ body, html {
     top: 0;
     height: 100%;
     z-index: 150;
+    /* Start collapsed on mobile — toggle reveals it */
+    transform: translateX(-100%);
   }
   .sidebar.collapsed {
     transform: translateX(-100%);
-    /* Override the conflicting margin-left rule */
     margin-left: 0 !important;
+  }
+  /* When sidebar is toggled open, slide it in */
+  .sidebar:not(.collapsed) {
+    transform: translateX(0);
   }
 
   /* ── CHAT WORKSPACE ─────────────────────────────────────── */
