@@ -227,12 +227,12 @@ export class UIController {
       }
     });
 
-    // Accordions
+    // Accordions — smooth max-height transition
     this.systemPromptToggle.addEventListener('click', () => {
-      this.systemPromptBody.classList.toggle('hidden');
+      this.systemPromptBody.classList.toggle('accordion-collapsed');
     });
     this.parametersToggle.addEventListener('click', () => {
-      this.parametersBody.classList.toggle('hidden');
+      this.parametersBody.classList.toggle('accordion-collapsed');
     });
 
     // Sliders
@@ -495,6 +495,22 @@ export class UIController {
     }
 
     this.filterModelList(this.modelSearchInput.value);
+
+    // Stagger fade-in for visible model items
+    if (window.anime) {
+      const visibleItems = Array.from(this.modelListContainer.querySelectorAll('.model-item'))
+        .filter(el => el.style.display !== 'none');
+      if (visibleItems.length) {
+        window.anime({
+          targets: visibleItems,
+          translateY: [8, 0],
+          opacity: [0, 1],
+          delay: window.anime.stagger(25),
+          duration: 300,
+          easing: 'easeOutExpo'
+        });
+      }
+    }
   }
 
   filterModelList(query) {
@@ -642,8 +658,16 @@ export class UIController {
   }
 
   showPrivacyBanner(show) {
-    if (show) this.privacyBanner.classList.remove('hidden');
-    else this.privacyBanner.classList.add('hidden');
+    if (show) {
+      this.privacyBanner.classList.remove('hidden');
+      this.privacyBanner.classList.remove('dismissing');
+    } else {
+      this.privacyBanner.classList.add('dismissing');
+      setTimeout(() => {
+        this.privacyBanner.classList.add('hidden');
+        this.privacyBanner.classList.remove('dismissing');
+      }, 280);
+    }
   }
 
   // Render Messages
@@ -844,6 +868,21 @@ export class UIController {
       });
       this.sessionListContainer.appendChild(item);
     });
+
+    // Stagger fade-in for session list items
+    if (window.anime) {
+      const items = this.sessionListContainer.querySelectorAll('.session-item');
+      if (items.length) {
+        window.anime({
+          targets: items,
+          translateY: [10, 0],
+          opacity: [0, 1],
+          delay: window.anime.stagger(35),
+          duration: 350,
+          easing: 'easeOutExpo'
+        });
+      }
+    }
   }
 
   // Open Artifact Canvas Workspace

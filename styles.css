@@ -879,6 +879,7 @@ body, html {
   padding: 24px 20px;
   display: flex;
   flex-direction: column;
+  scroll-behavior: smooth;
 }
 
 .messages-list {
@@ -1311,8 +1312,32 @@ body, html {
   margin: 10px auto;
   text-align: center;
   padding: 20px 10px;
-  animation: heroCascade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* ── Welcome Card Cascade Stagger ──────────────────────────────── */
+@keyframes cascadeIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-card > .cortex-hero-graphic,
+.welcome-card > .welcome-hero,
+.welcome-card > .cortex-starter-cards-grid,
+.welcome-card > .cortex-footer-note {
+  animation: cascadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.welcome-card > .cortex-hero-graphic    { animation-delay: 0.05s; }
+.welcome-card > .welcome-hero           { animation-delay: 0.15s; }
+.welcome-card > .cortex-starter-cards-grid { animation-delay: 0.25s; }
+.welcome-card > .cortex-footer-note     { animation-delay: 0.4s; }
+
+/* Starter cards stagger within the grid */
+.cortex-card {
+  animation: cascadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.cortex-card:nth-child(1) { animation-delay: 0.3s; }
+.cortex-card:nth-child(2) { animation-delay: 0.38s; }
+.cortex-card:nth-child(3) { animation-delay: 0.46s; }
 
 /* Smooth Flowing Ambient Line (Empty State) */
 .flowing-beam-container {
@@ -1502,8 +1527,32 @@ body, html {
   margin: 10px auto;
   text-align: center;
   padding: 20px 10px;
-  animation: heroCascade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* ── Welcome Card Cascade Stagger ──────────────────────────────── */
+@keyframes cascadeIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-card > .cortex-hero-graphic,
+.welcome-card > .welcome-hero,
+.welcome-card > .cortex-starter-cards-grid,
+.welcome-card > .cortex-footer-note {
+  animation: cascadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.welcome-card > .cortex-hero-graphic    { animation-delay: 0.05s; }
+.welcome-card > .welcome-hero           { animation-delay: 0.15s; }
+.welcome-card > .cortex-starter-cards-grid { animation-delay: 0.25s; }
+.welcome-card > .cortex-footer-note     { animation-delay: 0.4s; }
+
+/* Starter cards stagger within the grid */
+.cortex-card {
+  animation: cascadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.cortex-card:nth-child(1) { animation-delay: 0.3s; }
+.cortex-card:nth-child(2) { animation-delay: 0.38s; }
+.cortex-card:nth-child(3) { animation-delay: 0.46s; }
 
 /* Smooth Flowing Ambient Line (Empty State) */
 .flowing-beam-container {
@@ -2107,6 +2156,52 @@ body, html {
 
 /* Animations */
 .hidden { display: none !important; }
+
+/* ── Privacy Banner Dismiss Animation ──────────────────────────── */
+@keyframes bannerSlideUp {
+  from { opacity: 1; transform: translateY(0); max-height: 120px; margin-bottom: 0; padding-top: 12px; padding-bottom: 12px; }
+  to   { opacity: 0; transform: translateY(-20px); max-height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
+}
+.privacy-banner.dismissing {
+  animation: bannerSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ── Send Button Breathing Glow ────────────────────────────────── */
+@keyframes sendBreathingGlow {
+  0%, 100% { box-shadow: 0 2px 8px rgba(204, 120, 92, 0.25); }
+  50%      { box-shadow: 0 2px 20px rgba(204, 120, 92, 0.5); }
+}
+.input-container:focus-within .send-btn {
+  animation: sendBreathingGlow 2.5s ease-in-out infinite;
+}
+
+/* ── Canvas Tab Fade-in ────────────────────────────────────────── */
+@keyframes canvasFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.canvas-tab-content {
+  animation: canvasFadeIn 0.18s ease;
+}
+
+/* ── Accordion Smooth Transition ───────────────────────────────── */
+.accordion-content {
+  max-height: 500px;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease,
+              padding-top 0.25s ease,
+              padding-bottom 0.25s ease;
+  opacity: 1;
+}
+.accordion-content.accordion-collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
 
 @keyframes fadeIn {
   from { opacity: 0; }
