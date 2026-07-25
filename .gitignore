@@ -1,3 +1,5 @@
 node_modules/
 ui-ux-pro-max-skill/
 .agents/
+.env.local
+.env

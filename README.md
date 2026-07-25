@@ -9,7 +9,7 @@ Zero-server architecture. Complete privacy. Live interactive artifacts.
 [![JavaScript](https://img.shields.io/badge/Vanilla-JS-yellow)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Anime.js](https://img.shields.io/badge/UI-Anime.js-FF4B4B)](https://animejs.com/)
 
-<img src="https://via.placeholder.com/1000x500.png?text=NexusAI+Chat+Interface+Screenshot" alt="NexusAI Chat UI Preview" width="100%">
+<img src="./ChatGPT%20Image%20Jul%2024%2C%202026%2C%2010_52_42%20AM.png" alt="NexusAI Chat" width="100%" style="max-width:640px;border-radius:12px;">
   
 </div>
 
@@ -56,13 +56,22 @@ Whether you are connecting to cloud endpoints or running local GGUF models offli
 - Any modern web browser (Chrome, Firefox, Safari, Edge) supporting the Web Crypto API.
 - *(Optional)* Local LLM runner such as [Ollama](https://ollama.ai/) or [LM Studio](https://lmstudio.ai/).
 
-### 2. Run Locally
+### 2. Environment Setup (Optional)
+```bash
+cp .env.example .env
+# Edit .env with your Clerk keys if you want authentication
+```
+
+### 3. Run Locally
 ```bash
 # Clone the repository
 git clone https://github.com/indranil122/nexus-ai-chat.git
 
 # Navigate into the project directory
 cd nexus-ai-chat
+
+# Install dependencies (animejs for animations)
+npm install
 
 # Open index.html in your browser or serve via static server
 npx serve .

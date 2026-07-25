@@ -12,7 +12,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@clerk/clerk-js": "^6.25.7",
     "animejs": "^3.2.2"
   }
 }
